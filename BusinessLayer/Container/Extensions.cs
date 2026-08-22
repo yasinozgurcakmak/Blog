@@ -1,0 +1,17 @@
+using BusinessLayer.Abstract;
+using BusinessLayer.Concrete;
+using DataAccessLayer.Abstract;
+using DataAccessLayer.EntityFramework;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace BusinessLayer.Container
+{
+    public static class ServiceExtensions
+    {
+        public static void ContainerDependencies(this IServiceCollection services)
+        {
+            services.AddScoped<IAppUserService, AppUserManager>();
+            services.AddScoped<IAppUserDal, EfAppUserDal>();
+        }
+    }
+}
