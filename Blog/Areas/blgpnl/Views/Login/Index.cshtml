@@ -1,0 +1,33 @@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Giriş Yap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/admin/assets/css/style.css" />
+</head>
+<body>
+    <section class="login">
+        <div class="form-wrapper">
+            <h1>Giriş Yap</h1>
+
+            @* Hata mesajlarını göster *@
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <form method="post" action="/blgpnl/giris-yap">
+                @Html.AntiForgeryToken()
+                <input type="text"     placeholder="Kullanıcı Adı" autocomplete="off" name="username" />
+                <input type="password" placeholder="Parola"         autocomplete="off" name="password" />
+                <input type="submit" class="btn full" value="Giriş Yap">
+            </form>
+        </div>
+    </section>
+</body>
+</html>

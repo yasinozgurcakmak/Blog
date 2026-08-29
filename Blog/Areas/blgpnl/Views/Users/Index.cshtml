@@ -1,0 +1,162 @@
+@using Blog.Areas.blgpnl.Models
+@model List<UserWithRolesViewModel>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+<section>
+    <h1>Kullanıcılar </h1>
+    <div class="user-table-container">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Kullanıcı</th>
+                    <th>E-posta</th>
+                    <th>Onay</th>
+                    <th>Roller</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr id="user-row-@item.User.Id">
+                        <td data-label="Kullanıcı">@item.User.UserName</td>
+                        <td data-label="Email">@item.User.Email</td>
+                        <td data-label="Onay">@(item.User.EmailConfirmed ? "✔ Onaylı" : "✘ Onaylanmadı")</td>
+                        <td data-label="Rol" id="roles-cell-@item.User.Id">
+                            @if (item.Roles.Any())
+                            {
+                                @foreach (var rol in item.Roles)
+                                {
+                                    <span class="badge badge-role">@rol</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="no-role">—</span>
+                            }
+                        </td>
+                        <td data-label="Aksiyonlar">
+                            <div class="action-buttons">
+                                <a href="/blgpnl/kullanicilar/guncelle/@item.User.Id" class="btn-edit">✎ Düzenle</a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a href="#rolePopup" data-fancybox="" data-user-id="@item.User.Id" class="btn-roles role-btn">⚙ Roller</a>
+                                }
+                                <a href="/blgpnl/kullanicilar/sil/@item.User.Id" class="btn-delete delete-btn" onclick="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
+                                    ✕ Sil
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+
+@if (User.IsInRole("Admin"))
+{
+    <div id="rolePopup" style="display:none;">
+        <p>Kullanıcıya atanacak rolü seçin:</p>
+        <select id="roleSelect" class="role-select">
+            <option value="Admin">👑 Admin</option>
+            <option value="Editor">✏️ Editor</option>
+            <option value="User">👤 User</option>
+        </select>
+        <div>
+            <button id="saveRoleBtn" class="btn-edit" style="cursor:pointer;">💾 Kaydet</button>
+        </div>
+        <p id="roleMessage"></p>
+    </div>
+}
+
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+    <script>
+        var updateRoleUrlTemplate = '@Url.Action("ManageRoles", "Users", new { area = "blgpnl", id = "__ID__" })';
+
+        document.querySelectorAll('.role-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var userId = this.getAttribute('data-user-id');
+                document.getElementById('rolePopup').setAttribute('data-active-user', userId);
+
+                var msg = document.getElementById('roleMessage');
+                msg.style.display = 'none';
+                msg.textContent = '';
+            });
+        });
+
+        document.getElementById('saveRoleBtn').addEventListener('click', function () {
+            var popup = document.getElementById('rolePopup');
+            var userId = popup.getAttribute('data-active-user');
+            var selectedRole = document.getElementById('roleSelect').value;
+            var msg = document.getElementById('roleMessage');
+
+            if (!userId) {
+                msg.style.color = 'red';
+                msg.textContent = 'Kullanıcı bulunamadı.';
+                msg.style.display = 'block';
+                return;
+            }
+
+            var url = updateRoleUrlTemplate.replace('__ID__', userId);
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify([selectedRole])
+            })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error('HTTP ' + res.status + ' hatası oluştu.');
+                }
+                return res.json();
+            })
+            .then(function (data) {
+                if (data.success) {
+                    msg.style.color = 'green';
+                    msg.textContent = '✔ Rol başarıyla kaydedildi.';
+                    msg.style.display = 'block';
+
+                    var cell = document.getElementById('roles-cell-' + userId);
+                    if (cell) {
+                        if (data.roles && data.roles.length > 0) {
+                            cell.innerHTML = data.roles.map(function (r) {
+                                return '<span class="badge badge-role">' + r + '</span>';
+                            }).join('');
+                        } else {
+                            cell.innerHTML = '<span class="no-role">—</span>';
+                        }
+                    }
+
+                    setTimeout(function () {
+                        if (typeof $.fancybox !== 'undefined') {
+                            $.fancybox.close();
+                        }
+                    }, 1500);
+                } else {
+                    msg.style.color = 'red';
+                    msg.textContent = '✘ Hata: ' + (data.message || 'Rol kaydedilemedi.');
+                    msg.style.display = 'block';
+                }
+            })
+            .catch(function (err) {
+                console.error("Rol güncelleme hatası:", err);
+                msg.style.color = 'red';
+                msg.textContent = '✘ Hata: ' + (err.message || 'Sunucu hatası oluştu.');
+                msg.style.display = 'block';
+            });
+        });
+    </script>
+}

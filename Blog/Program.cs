@@ -6,23 +6,35 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Servisler ────────────────────────────────────────────────
 builder.Services.AddControllersWithViews();
 
-// PostgreSQL bağlantısı
 builder.Services.AddDbContext<Context>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Identity
-builder.Services.AddIdentity<AppUser, AppRole>()
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
     .AddEntityFrameworkStores<Context>()
     .AddDefaultTokenProviders();
 
-// N-katmanlı bağımlılıklar (BusinessLayer/Container/Extensions.cs)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/blgpnl/giris-yap";
+    options.AccessDeniedPath = "/blgpnl/giris-yap";
+
+    options.Events.OnRedirectToLogin = context =>
+    {
+        context.Response.Redirect(options.LoginPath);
+        return Task.CompletedTask;
+    };
+});
+
 builder.Services.ContainerDependencies();
 
-// ── Pipeline ─────────────────────────────────────────────────
 var app = builder.Build();
+
+
 
 if (!app.Environment.IsDevelopment())
 {
@@ -34,8 +46,17 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.UseAuthentication(); // Identity için gerekli
+
+app.UseAuthentication(); 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+      name: "areas",
+      pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+    );
+});
+
 
 app.MapControllerRoute(
     name: "default",

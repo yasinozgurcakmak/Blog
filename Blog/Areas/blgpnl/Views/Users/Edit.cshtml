@@ -1,0 +1,67 @@
+@using EntityLayer.Concrete
+@model AppUser
+
+@{
+    ViewData["Title"] = "Kullanıcı Düzenle";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+
+<section class="edit-section">
+    <div class="edit-form-wrapper">
+        <h1>Kullanıcı Düzenle</h1>
+
+        <form method="post" action="/blgpnl/kullanicilar/guncelle/@Model.Id" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            @* Gizli ID alanı *@
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="UserName">Kullanıcı Adı</label>
+                <input type="text" asp-for="UserName"  value="@Model.UserName"/>
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Name">Ad</label>
+                <input type="text" asp-for="Name"  value="@Model.Name"/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname">Soyad</label>
+                <input type="text" asp-for="Surname"  value="@Model.Surname"/>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">E-posta</label>
+                <input type="email" asp-for="Email"  value="@Model.Email"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group imgArea">
+                <label>Profil Fotoğrafı</label>
+                <div class="img-content">
+
+                    <div >
+                        <img id="profilePreview" class="profilePicture" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://ui-avatars.com/api/?name=" + Model.Name + "+" + Model.Surname + "&background=random&color=fff&size=80" : Model.ImageUrl)" alt="Profil önizleme" />
+                    </div>
+
+                    <input type="hidden" name="ExistingImageUrl" value="@Model.ImageUrl" />
+
+                    <input type="file" id="profileImageInput" name="ProfileImage" class="file" accept="image/*" />
+                    <small>Fotoğraf değiştirmek istemiyorsanız boş bırakın.</small>
+                </div>
+               
+            </div>
+
+
+
+            <div class="form-actions">
+                <button type="submit" class="btn ">Kaydet</button>
+                <a href="/blgpnl/kullanicilar" class="btn ">İptal</a>
+            </div>
+        </form>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </div>
+</section>
