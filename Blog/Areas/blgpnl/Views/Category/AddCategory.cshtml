@@ -1,0 +1,31 @@
+@model DtoLayer.Dtos.CategoryDtos.CreateCategoryDto
+@{
+    ViewData["Title"] = "Yeni Kategori Ekle";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+
+<section>
+    <h2>Yeni Kategori Ekle</h2>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+        </div>
+    }
+
+    <form action="/blgpnl/kategoriler/ekle" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="form-label">Kategori Adı</label>
+            <input asp-for="Name" class="form-control kategori" placeholder="Kategori adını giriniz..." required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <button type="submit" class="btn btn-primary">Kaydet</button>
+            <a href="/blgpnl/kategoriler" class="btn btn-secondary">İptal</a>
+        </div>
+    </form>
+</section>
+

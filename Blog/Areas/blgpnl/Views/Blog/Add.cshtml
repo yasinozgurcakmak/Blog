@@ -1,0 +1,106 @@
+@model BlogCreateViewModel
+@{
+    ViewData["Title"] = "Yeni Blog Ekle";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+
+<section class="edit-section">
+    <div class="edit-form-wrapper">
+        <h1>Yeni Blog Ekle</h1>
+
+        <form method="post" action="/blgpnl/yazilar/ekle" enctype="multipart/form-data" class="blog-form" novalidate>
+            @Html.AntiForgeryToken()
+
+            <div class="form-group requiredField">
+                <label asp-for="Dto.Title">Başlık <span class="required-star">*</span></label>
+                <input type="text" asp-for="Dto.Title" id="titleInput" placeholder="Blog başlığını giriniz..." />
+                <span asp-validation-for="Dto.Title" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group requiredField">
+                <label asp-for="Dto.Slug">URL Bağlantısı (Slug) <span class="required-star">*</span></label>
+                <input type="text" asp-for="Dto.Slug" id="slugInput" placeholder="blog-basligi-gibi" />
+                <small class="form-hint">Başlık yazıldıkça otomatik oluşturulur, dilerseniz müdahale edip değiştirebilirsiniz.</small>
+                <span asp-validation-for="Dto.Slug" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group requiredField">
+                <label asp-for="Dto.Summary">Özet / Ön Yazı <span class="required-star">*</span></label>
+                <textarea asp-for="Dto.Summary" rows="3" placeholder="Blog ile ilgili kısa özet yazınız..."></textarea>
+                <span asp-validation-for="Dto.Summary" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group requiredField">
+                <label asp-for="Dto.CategoryId">Kategori <span class="required-star">*</span></label>
+                <select asp-for="Dto.CategoryId" class="select2-select" asp-items="Model.Categories">
+                    <option value="">-- Kategori Seçiniz --</option>
+                </select>
+                <span asp-validation-for="Dto.CategoryId" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group requiredField">
+                <label asp-for="Dto.Content">Blog İçeriği <span class="required-star">*</span></label>
+                <textarea asp-for="Dto.Content" id="summernote"></textarea>
+                <span asp-validation-for="Dto.Content" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Dto.MetaTitle">SEO Başlık (Meta Title)</label>
+                <input type="text" asp-for="Dto.MetaTitle" placeholder="Arama motorlarında görünecek başlık..." />
+                <span asp-validation-for="Dto.MetaTitle" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Dto.MetaDescription">SEO Açıklaması (Meta Description)</label>
+                <textarea asp-for="Dto.MetaDescription" rows="3" placeholder="Arama motorlarında görünecek açıklama..."></textarea>
+                <span asp-validation-for="Dto.MetaDescription" class="validation-error-msg"></span>
+            </div>
+
+            <div class="form-group requiredField">
+                <label>Küçük Resim (Thumbnail) <span class="required-star">*</span> <small class="form-hint" style="display:inline; margin-left:6px; font-weight:normal;">(Görsel boyutları 300x300 px olmalıdır)</small></label>
+                <div class="file-wrapper">
+                    <input type="file" id="file" asp-for="Dto.ThumbnailFile" class="file" accept="image/*" />
+                    <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M21 11V15.8C21 16.9201 21 17.4802 20.782 17.908C20.5903 18.2843 20.2843 18.5903 19.908 18.782C19.4802 19 18.9201 19 17.8 19H6.2C5.0799 19 4.51984 19 4.09202 18.782C3.71569 18.5903 3.40973 18.2843 3.21799 17.908C3 17.4802 3 16.9201 3 15.8V8.2C3 7.0799 3 6.51984 3.21799 6.09202C3.40973 5.71569 3.71569 5.40973 4.09202 5.21799C4.51984 5 5.0799 5 6.2 5H15M21 11L15 5M21 11H16.6C16.0399 11 15.7599 11 15.546 10.891C15.3578 10.7951 15.2049 10.6422 15.109 10.454C15 10.2401 15 9.96005 15 9.4V5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                    <label for="file">Görsel Seçiniz</label>
+                </div>
+
+                <div id="imagePreviewWrapper" class="image-preview-wrapper" style="display: none;">
+                    <div class="image-preview-card">
+                        <div class="preview-header">
+                            <span id="previewBadge" class="preview-badge">
+                                <i class="fa-solid fa-image"></i> Görsel Ön Gösterimi
+                            </span>
+                            <button type="button" id="btnRemoveImage" class="btn-remove-image" title="Seçilen Görseli Kaldır">
+                                <i class="fa-solid fa-trash-can"></i> Kaldır
+                            </button>
+                        </div>
+                        <div class="preview-body">
+                            <img id="imagePreview" src="#" alt="Görsel Öngösterimi" />
+                        </div>
+                        <div class="preview-footer">
+                            <span id="previewInfo" class="preview-info"></span>
+                        </div>
+                    </div>
+                </div>
+                <span asp-validation-for="Dto.ThumbnailFile" id="fileValidationError" class="validation-error-msg"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dto.PublishDate">Yayınlanma Tarihi & Saati</label>
+                <input type="datetime-local" asp-for="Dto.PublishDate" />
+                <small class="form-hint">İleri bir tarih ve saat seçerseniz, yazı o vakit gelene kadar sitede görünmez (zamanlanır).</small>
+            </div>
+            <div class="form-group">
+                <label asp-for="Dto.Status">Yayın Durumu</label>
+                <select asp-for="Dto.Status">
+                    <option value="true" selected>Aktif / Yayında</option>
+                    <option value="false">Taslak / Pasif</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <button type="submit" class="btn btn-edit">Kaydet</button>
+                <a href="/blgpnl/yazilar" class="btn btn-delete">İptal</a>
+            </div>
+        </form>
+    </div>
+</section>

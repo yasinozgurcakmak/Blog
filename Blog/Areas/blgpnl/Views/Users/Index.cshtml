@@ -39,14 +39,15 @@
                         </td>
                         <td data-label="Aksiyonlar">
                             <div class="action-buttons">
-                                <a href="/blgpnl/kullanicilar/guncelle/@item.User.Id" class="btn-edit">✎ Düzenle</a>
+                                <a href="/blgpnl/kullanicilar/guncelle/@item.User.Id" class="btn btn-edit">✎ Düzenle</a>
                                 @if (User.IsInRole("Admin"))
                                 {
-                                    <a href="#rolePopup" data-fancybox="" data-user-id="@item.User.Id" class="btn-roles role-btn">⚙ Roller</a>
+                                    <a href="#rolePopup" data-fancybox="" data-user-id="@item.User.Id" class="btn btn-roles">⚙ Roller</a>
+                                    <form method="post" action="/blgpnl/kullanicilar/sil/@item.User.Id" style="display:inline;" onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-delete">✕ Sil</button>
+                                    </form>
                                 }
-                                <a href="/blgpnl/kullanicilar/sil/@item.User.Id" class="btn-delete delete-btn" onclick="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
-                                    ✕ Sil
-                                </a>
                             </div>
                         </td>
                     </tr>
@@ -80,7 +81,7 @@
     <script>
         var updateRoleUrlTemplate = '@Url.Action("ManageRoles", "Users", new { area = "blgpnl", id = "__ID__" })';
 
-        document.querySelectorAll('.role-btn').forEach(function (btn) {
+        document.querySelectorAll('.btn-roles').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var userId = this.getAttribute('data-user-id');
                 document.getElementById('rolePopup').setAttribute('data-active-user', userId);

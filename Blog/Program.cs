@@ -1,6 +1,7 @@
 using BusinessLayer.Container;
 using DataAccessLayer.Concrete;
 using EntityLayer.Concrete;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,21 +23,22 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/blgpnl/giris-yap";
     options.AccessDeniedPath = "/blgpnl/giris-yap";
-
-    options.Events.OnRedirectToLogin = context =>
-    {
-        context.Response.Redirect(options.LoginPath);
-        return Task.CompletedTask;
-    };
+    options.Cookie.Name = "BlogPanelCookie";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 builder.Services.ContainerDependencies();
+builder.Services.AddValidatorsFromAssemblyContaining<Blog.ValidationRules.CreateBlogValidator>();
 
 var app = builder.Build();
 
-
-
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();

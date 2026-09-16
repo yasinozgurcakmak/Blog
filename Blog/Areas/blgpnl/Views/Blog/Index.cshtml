@@ -1,0 +1,55 @@
+@model List<DtoLayer.Dtos.BlogDtos.BlogListDto>
+@{
+    ViewData["Title"] = "Bloglar";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+
+<section>
+    <div class="row j-between">
+        <h1>Bloglar</h1>
+        <a href="/blgpnl/yazilar/ekle" class="btn btn-edit" >Blog Ekle</a>
+    </div>
+
+    <div class="searchArea">
+        <input type="text" id="blogSearchInput" placeholder="Başlığa göre arayın..." autocomplete="off"/>
+        <span id="searchSpinner" >⌛</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <td>İsim</td>
+                <td>Yayınlama/Güncelleme Tarihi</td>
+                <td>Yayında</td>
+                <td>Aksiyon</td>
+            </tr>
+        </thead>
+        <tbody id="blogTableBody">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.CreatedDate.ToString("dd MMMM yyyy") @(item.UpdatedDate.HasValue ? " / " + item.UpdatedDate.Value.ToString("dd MMMM yyyy") : "")</td>
+                        <td>@(!item.Status ? "Yayında Değil" : (item.PublishDate.HasValue && item.PublishDate.Value > DateTime.Now ? $"Zamanlandı ({item.PublishDate.Value.ToString("dd.MM.yyyy HH:mm")})" : "Yayında"))</td>
+                        <td class="row">
+                            <a href="/blgpnl/yazilar/duzenle/@item.Slug" class="btn btn-edit">Düzenle</a>
+                            <form method="post" action="/blgpnl/yazilar/sil/@item.Id" style="display:inline;" onsubmit="return confirm('Bu blog yazısını silmek istediğinize emin misiniz?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-delete">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 20px;">Henüz blog yazısı bulunmamaktadır.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+

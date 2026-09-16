@@ -1,4 +1,5 @@
 
+@model DtoLayer.Dtos.UserDtos.UserLoginDto
 @{
     Layout = null;
 }
@@ -23,8 +24,10 @@
 
             <form method="post" action="/blgpnl/giris-yap">
                 @Html.AntiForgeryToken()
-                <input type="text"     placeholder="Kullanıcı Adı" autocomplete="off" name="username" />
-                <input type="password" placeholder="Parola"         autocomplete="off" name="password" />
+                <input type="text" placeholder="Kullanıcı Adı" autocomplete="off" asp-for="UserName" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+                <input type="password" placeholder="Parola" autocomplete="off" asp-for="Password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
                 <input type="submit" class="btn full" value="Giriş Yap">
             </form>
         </div>

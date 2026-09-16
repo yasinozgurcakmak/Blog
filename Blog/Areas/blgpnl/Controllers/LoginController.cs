@@ -1,83 +1,66 @@
+using DtoLayer.Dtos.UserDtos;
 using EntityLayer.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Blog.Areas.blgpnl.Controllers
+namespace Blog.Areas.blgpnl.Controllers;
+
+[Area("blgpnl")]
+[AllowAnonymous]
+public class LoginController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager) : Controller
 {
-    [Area("blgpnl")]
-    [AllowAnonymous]
-    public class LoginController : Controller
+    [HttpGet]
+    [Route("blgpnl/giris-yap")]
+    public IActionResult Index() => View(new UserLoginDto());
+
+    [HttpPost]
+    [Route("blgpnl/giris-yap")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index(UserLoginDto dto)
     {
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly UserManager<AppUser> _userManager;
-
-        public LoginController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager)
+        if (!ModelState.IsValid)
         {
-            _signInManager = signInManager;
-            _userManager = userManager;
+            return View(dto);
         }
 
-        [HttpGet]
-        [Route("blgpnl/giris-yap")]
-        public IActionResult Index()
+        var user = await userManager.FindByNameAsync(dto.UserName);
+        if (user is null)
         {
-            return View();
+            ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı.");
+            return View(dto);
         }
 
-        [HttpPost]
-        [Route("blgpnl/giris-yap")]
-        public async Task<IActionResult> Index(string username, string password)
+        var roles = await userManager.GetRolesAsync(user);
+        var isAuthorized = roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("Editor", StringComparison.OrdinalIgnoreCase));
+        if (!isAuthorized)
         {
-            // 1. Kullanıcıyı bul
-            var user = await _userManager.FindByNameAsync(username);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı.");
-                return View();
-            }
-
-            // 2. Rolünü kontrol et — sadece Admin ve Editor girebilir
-            var roles = await _userManager.GetRolesAsync(user);
-            bool yetkiliRol = roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase))
-                           || roles.Any(r => r.Equals("Editor", StringComparison.OrdinalIgnoreCase));
-            if (!yetkiliRol)
-            {
-                ModelState.AddModelError("", $"Bu panele erişim yetkiniz bulunmamaktadır. (Mevcut roller: {string.Join(", ", roles.Any() ? roles : new[] { "Yok" })})");
-                return View();
-            }
-
-            // 3. Şifreyi doğrula ve oturum aç
-            var result = await _signInManager.PasswordSignInAsync(
-                user,
-                password,
-                isPersistent: false,   // "Beni hatırla" — false = tarayıcı kapanınca oturum biter
-                lockoutOnFailure: true // 5 başarısız denemede hesabı kilitle
-            );
-
-            if (result.Succeeded)
-            {
-                return Redirect("/blgpnl/kullanicilar");
-            }
-
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "Hesabınız geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.");
-                return View();
-            }
-
-            ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı.");
-            return View();
+            ModelState.AddModelError(string.Empty, $"Bu panele erişim yetkiniz bulunmamaktadır. (Mevcut roller: {string.Join(", ", roles.DefaultIfEmpty("Yok"))})");
+            return View(dto);
         }
 
-        [HttpGet]
-        [Route("blgpnl/cikis")]
-        public async Task<IActionResult> Logout()
+        var result = await signInManager.PasswordSignInAsync(user, dto.Password, isPersistent: false, lockoutOnFailure: true);
+
+        if (result.Succeeded) return Redirect("/blgpnl/kullanicilar");
+
+        if (result.IsLockedOut)
         {
-            await _signInManager.SignOutAsync();
-            return Redirect("/blgpnl/giris-yap");
+            ModelState.AddModelError(string.Empty, "Hesabınız geçici olarak kilitlendi. Lütfen daha sonra tekrar deneyin.");
+            return View(dto);
         }
+
+        ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı.");
+        return View(dto);
+    }
+
+    [HttpGet]
+    [Route("blgpnl/cikis")]
+    public async Task<IActionResult> Logout()
+    {
+        await signInManager.SignOutAsync();
+        return Redirect("/blgpnl/giris-yap");
     }
 }

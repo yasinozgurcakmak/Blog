@@ -1,5 +1,4 @@
-@using EntityLayer.Concrete
-@model AppUser
+@model DtoLayer.Dtos.UserDtos.UserEditDto
 
 @{
     ViewData["Title"] = "Kullanıcı Düzenle";
@@ -13,28 +12,30 @@
         <form method="post" action="/blgpnl/kullanicilar/guncelle/@Model.Id" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
-            @* Gizli ID alanı *@
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ExistingImageUrl" />
 
             <div class="form-group">
                 <label asp-for="UserName">Kullanıcı Adı</label>
-                <input type="text" asp-for="UserName"  value="@Model.UserName"/>
+                <input type="text" asp-for="UserName" />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Name">Ad</label>
-                <input type="text" asp-for="Name"  value="@Model.Name"/>
+                <input type="text" asp-for="Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Surname">Soyad</label>
-                <input type="text" asp-for="Surname"  value="@Model.Surname"/>
+                <input type="text" asp-for="Surname" />
+                <span asp-validation-for="Surname" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="Email">E-posta</label>
-                <input type="email" asp-for="Email"  value="@Model.Email"/>
+                <input type="email" asp-for="Email" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             
@@ -42,22 +43,20 @@
                 <label>Profil Fotoğrafı</label>
                 <div class="img-content">
 
-                    <div >
-                        <img id="profilePreview" class="profilePicture" src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "https://ui-avatars.com/api/?name=" + Model.Name + "+" + Model.Surname + "&background=random&color=fff&size=80" : Model.ImageUrl)" alt="Profil önizleme" />
+                    <div>
+                        <img id="profilePreview" class="profilePicture" src="@(string.IsNullOrEmpty(Model.ExistingImageUrl) ? "https://ui-avatars.com/api/?name=" + Model.Name + "+" + Model.Surname + "&background=random&color=fff&size=80" : Model.ExistingImageUrl)" alt="Profil önizleme" />
                     </div>
 
-                    <input type="hidden" name="ExistingImageUrl" value="@Model.ImageUrl" />
-
-                    <input type="file" id="profileImageInput" name="ProfileImage" class="file" accept="image/*" />
+                    <input type="file" id="profileImageInput" asp-for="ProfileImage" class="file" accept="image/*" />
                     <small>Fotoğraf değiştirmek istemiyorsanız boş bırakın.</small>
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
                 </div>
-               
             </div>
 
 
 
-            <div class="form-actions">
-                <button type="submit" class="btn ">Kaydet</button>
+            <div class="row">
+                <button type="submit" class="btn">Kaydet</button>
                 <a href="/blgpnl/kullanicilar" class="btn ">İptal</a>
             </div>
         </form>

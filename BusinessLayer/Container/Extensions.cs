@@ -12,6 +12,15 @@ namespace BusinessLayer.Container
         {
             services.AddScoped<IAppUserService, AppUserManager>();
             services.AddScoped<IAppUserDal, EfAppUserDal>();
+
+            services.AddScoped<IBlogService, BlogManager>();
+            services.AddScoped<IBlogDal, EfBlogDal>();
+
+
+            services.AddScoped<ICategoryService, CategoryManager>();
+            services.AddScoped<ICategoryDal, EfCategoryDal>();
+
+            services.AddAutoMapper(cfg => cfg.AddProfile<BusinessLayer.Mapping.AutoMapperProfile>());
         }
     }
 }

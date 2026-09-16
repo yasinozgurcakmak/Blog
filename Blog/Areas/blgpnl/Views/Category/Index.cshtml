@@ -1,0 +1,35 @@
+@model List<DtoLayer.Dtos.CategoryDtos.CategoryListDto>
+@{
+    ViewData["Title"] = "Kategoriler";
+    Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
+}
+
+<section>
+    <h1>Kategoriler</h1>
+    <table class="half">
+        <thead>
+            <tr>
+                <td>İsim</td>
+                <td>Aksiyon</td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>
+                        <div class="action-buttons">
+                            <form method="post" action="/blgpnl/kategoriler/sil/@item.Id" style="display:inline;" onsubmit="return confirm('Bu kategoriyi silmek istediğinize emin misiniz?');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-delete">Sil</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a href="/blgpnl/kategoriler/ekle" class="btn">Kategori Ekle</a>
+</section>
+
