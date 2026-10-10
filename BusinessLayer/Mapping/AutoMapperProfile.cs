@@ -10,7 +10,6 @@ public class AutoMapperProfile : Profile
 {
     public AutoMapperProfile()
     {
-        // Blog Mappings
         CreateMap<CreateBlogDto, Blog>()
             .ForMember(dest => dest.Thumbnail, opt => opt.Ignore())
             .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -29,11 +28,10 @@ public class AutoMapperProfile : Profile
 
         CreateMap<Blog, BlogListDto>();
 
-        // Category Mappings
         CreateMap<CreateCategoryDto, Category>();
         CreateMap<Category, CategoryListDto>().ReverseMap();
 
-        // User Mappings
+
         CreateMap<AppUser, UserEditDto>()
             .ForMember(dest => dest.ExistingImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
             .ForMember(dest => dest.ProfileImage, opt => opt.Ignore())

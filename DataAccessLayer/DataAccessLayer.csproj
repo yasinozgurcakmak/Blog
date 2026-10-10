@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EntityLayer\EntityLayer.csproj" />
+    <ProjectReference Include="..\DtoLayer\DtoLayer.csproj" />
   </ItemGroup>
 
 </Project>

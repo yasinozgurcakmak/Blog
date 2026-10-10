@@ -1,13 +1,11 @@
-﻿using EntityLayer.Concrete;
-using System;
+using EntityLayer.Concrete;
+using DtoLayer.Dtos.HomeDtos;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
     public interface ICategoryDal : IGenericDal<Category>
     {
+        List<CategoryWithCountDto> GetCategoriesWithPublishedBlogCount(int take);
     }
 }

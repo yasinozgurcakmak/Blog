@@ -1,13 +1,11 @@
-﻿using EntityLayer.Concrete;
-using System;
+using DtoLayer.Dtos.HomeDtos;
+using EntityLayer.Concrete;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLayer.Abstract
 {
     public interface ICategoryService : IGenericService<Category>
     {
+        List<CategoryWithCountDto> GetPopularCategories(int take = 5);
     }
 }

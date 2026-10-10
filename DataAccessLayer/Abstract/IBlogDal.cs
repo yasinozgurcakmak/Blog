@@ -1,13 +1,13 @@
-﻿using EntityLayer.Concrete;
-using System;
+using EntityLayer.Concrete;
+using DtoLayer.Dtos.HomeDtos;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
-    public interface IBlogDal:IGenericDal<Blog>
+    public interface IBlogDal : IGenericDal<Blog>
     {
+        List<BlogCardDto> GetBlogCards(int? categoryId, int skip, int take);
+        BlogDetailDto? GetBlog(string slug);
+        void IncrementViewCount(int id);
     }
 }

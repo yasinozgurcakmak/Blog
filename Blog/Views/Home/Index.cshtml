@@ -1,8 +1,112 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model HomeIndexViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <div class="container">
+        <section class="feed">
+            <div id="blog-list" style="display:contents">
+                @if (Model.Blogs.Count == 0)
+                {
+                    <p>Henüz yayınlanmış bir yazı bulunmuyor.</p>
+                }
+                <partial name="_BlogCards" model="Model.Blogs" />
+            </div>
+
+            @if (Model.HasMore)
+            {
+                <div class="load-more">
+                    <button type="button" id="load-more-btn" class="btn btn--ghost" data-page="2" data-category-id="@Model.SelectedCategoryId" data-url="@Url.Action("LoadMore", "Home")">
+                        Daha Fazla Yazı Yükle
+                    </button>
+                </div>
+            }
+        </section>
+
+        <aside class="sidebar">
+            <div class="widget widget--trending">
+                <div class="widget-header">
+                    <h3>Konular</h3>
+                    <a href="#">Hepsini Görüntüle</a>
+                </div>
+                <ul>
+                    @foreach (var category in Model.Categories)
+                    {
+                        <li>
+                            <a href="?categoryId=@category.Id">
+                                <span># @category.Name</span>
+                                <em>@category.BlogCount İçerik</em>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+            <div class="widget widget--newsletter">
+                <h3>Bültenimize abone olun</h3>
+                <p>En güncel web mühendisliği içeriklerini, tasarım sistemi konusundaki en iyi uygulamaları ve özenle seçilmiş sektör haberlerini her hafta alın.</p>
+                <form onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="Email Adresinizi Giriniz" required>
+                    <button type="submit" class="btn btn--primary">Abone Ol</button>
+                </form>
+            </div>
+
+            <div class="sidebar-footer">
+                <a href="#">Hakkımızda</a>
+                <a href="#">Gizlilik Politikası</a>
+                <span>© @DateTime.Now.Year Blog Inc.</span>
+            </div>
+        </aside>
+    </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const btn = document.getElementById('load-more-btn');
+            if (!btn) return;
+            const list = document.getElementById('blog-list');
+            const sentinel = btn.closest('.load-more');
+            let loading = false;
+
+            async function loadNext() {
+                if (loading) return;
+                loading = true;
+                btn.disabled = true;
+                btn.textContent = 'Yükleniyor...';
+
+                const page = parseInt(btn.dataset.page, 10);
+                const params = new URLSearchParams({ page });
+                if (btn.dataset.categoryId) params.set('categoryId', btn.dataset.categoryId);
+
+                try {
+                    const res = await fetch(btn.dataset.url + '?' + params.toString());
+                    if (!res.ok) throw new Error(res.status);
+                    list.insertAdjacentHTML('beforeend', await res.text());
+
+                    if (res.headers.get('X-Has-More') === 'true') {
+                        btn.dataset.page = page + 1;
+                        btn.disabled = false;
+                        btn.textContent = 'Daha Fazla Yazı Yükle';
+                        // Sentinel hâlâ ekrandaysa observer tekrar tetiklensin diye yeniden gözlemle.
+                        observer.unobserve(sentinel);
+                        observer.observe(sentinel);
+                    } else {
+                        observer.disconnect();
+                        sentinel.remove();
+                    }
+                } catch (e) {
+                    // Hata durumunda otomatik döngüyü durdur; kullanıcı butonla yeniden deneyebilir.
+                    observer.disconnect();
+                    btn.disabled = false;
+                    btn.textContent = 'Yüklenemedi, tekrar dene';
+                } finally {
+                    loading = false;
+                }
+            }
+
+            const observer = new IntersectionObserver(function (entries) {
+                if (entries.some(e => e.isIntersecting)) loadNext();
+            }, { rootMargin: '300px 0px' });
+
+            observer.observe(sentinel);
+            btn.addEventListener('click', loadNext); // fallback / retry
+        })();
+    </script>
+}

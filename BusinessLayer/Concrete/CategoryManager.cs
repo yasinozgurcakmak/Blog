@@ -1,5 +1,6 @@
 using BusinessLayer.Abstract;
 using DataAccessLayer.Abstract;
+using DtoLayer.Dtos.HomeDtos;
 using EntityLayer.Concrete;
 using System;
 using System.Collections.Generic;
@@ -16,4 +17,6 @@ public class CategoryManager(ICategoryDal categoryDal) : ICategoryService
     public void TInsert(Category t) => categoryDal.Insert(t);
     public void TMultiUpdate(List<Category> t) => categoryDal.MultiUpdate(t);
     public void TUpdate(Category t) => categoryDal.Update(t);
+
+    public List<CategoryWithCountDto> GetPopularCategories(int take = 5) => categoryDal.GetCategoriesWithPublishedBlogCount(Math.Clamp(take, 1, 50));
 }

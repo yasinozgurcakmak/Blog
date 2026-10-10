@@ -35,6 +35,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\blgpnl\Data\" />
+    <Folder Include="wwwroot\assets\images\" />
     <Folder Include="wwwroot\uploads\blogs\" />
   </ItemGroup>
 

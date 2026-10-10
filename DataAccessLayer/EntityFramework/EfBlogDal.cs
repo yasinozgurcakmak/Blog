@@ -1,19 +1,80 @@
-﻿using DataAccessLayer.Abstract;
+using DataAccessLayer.Abstract;
 using DataAccessLayer.Concrete;
 using DataAccessLayer.Repository;
 using EntityLayer.Concrete;
+using DtoLayer.Dtos.HomeDtos;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.EntityFramework
 {
-    public class EfBlogDal : GenericRepository<Blog>, IBlogDal
+    public class EfBlogDal(Context context) : GenericRepository<Blog>(context), IBlogDal
     {
-        public EfBlogDal(Context context) : base(context)
+        public List<BlogCardDto> GetBlogCards(int? categoryId, int skip, int take)
         {
+            var now = DateTime.Now;
+            var query =
+                from b in context.Blogs.AsNoTracking()
+                join c in context.Category.AsNoTracking() on b.CategoryId equals c.Id
+                join u in context.Users.AsNoTracking() on b.AppUserId equals u.Id
+                where b.Status && (b.PublishDate == null || b.PublishDate <= now)
+                      && (categoryId == null || b.CategoryId == categoryId)
+                orderby (b.PublishDate ?? b.CreatedDate) descending, b.Id descending
+                select new BlogCardDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Slug = b.Slug,
+                    Summary = b.Summary,
+                    Thumbnail = b.Thumbnail,
+                    ReadingTime = b.ReadingTime,
+                    PublishedAt = b.PublishDate ?? b.CreatedDate,
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    AuthorName = u.Name + " " + u.Surname,
+                    AuthorImageUrl = u.ImageUrl
+                };
+
+            return query.Skip(skip).Take(take).ToList();
+        }
+
+        public BlogDetailDto? GetBlog(string slug)
+        {
+            var now = DateTime.Now;
+
+            var query =
+                from b in context.Blogs.AsNoTracking()
+                join c in context.Category.AsNoTracking() on b.CategoryId equals c.Id
+                join u in context.Users.AsNoTracking() on b.AppUserId equals u.Id
+                where b.Slug == slug && b.Status && (b.PublishDate == null || b.PublishDate <= now)
+                select new BlogDetailDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Slug = b.Slug,
+                    Summary = b.Summary,
+                    Content = b.Content,
+                    Thumbnail = b.Thumbnail,
+                    ReadingTime = b.ReadingTime,
+                    ViewCount = b.ViewCount,
+                    MetaTitle = b.MetaTitle,
+                    MetaDescription = b.MetaDescription,
+                    PublishedAt = b.PublishDate ?? b.CreatedDate,
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    AuthorName = u.Name + " " + u.Surname,
+                    AuthorImageUrl = u.ImageUrl
+                };
+
+            return query.FirstOrDefault();
+        }
+
+       
+        public void IncrementViewCount(int id)
+        {
+            context.Blogs.Where(b => b.Id == id).ExecuteUpdate(s => s.SetProperty(b => b.ViewCount, b => b.ViewCount + 1));
         }
     }
 }

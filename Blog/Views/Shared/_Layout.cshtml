@@ -4,11 +4,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Blog</title>
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    @await RenderSectionAsync("Head", required: false)
 
 </head>
 <body>
-    <div class="container">
-            @RenderBody()
-    </div>
+    <header class="header">
+        <div class="header__inner">
+            <div class="brand">
+                <a href="/">
+                    <b>B</b>
+                    <span>BLOG</span>
+                </a>
+
+            </div>
+
+            <div class="actions">
+                <a href="/giris-yap" class="btn btn--ghost">Giriş Yap</a>
+                <a href="/uye-ol" class="btn btn--primary">Üye Ol</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <script src="~/assets/js/main.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

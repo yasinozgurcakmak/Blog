@@ -52,7 +52,7 @@ $(document).ready(function() {
         }
     }
 
-    $('input[name="thumbnailFile"]').on('change', function (e) {
+    $('.file').on('change', function (e) {
         clearFileError();
         var file = e.target.files[0];
         if (!file) {
@@ -102,7 +102,7 @@ $(document).ready(function() {
     });
 
     $('#btnRemoveImage').on('click', function () {
-        $('input[name="thumbnailFile"]').val('');
+        $('.file').val('');
         clearFileError();
         resetPreviewToDefault();
     });
@@ -123,7 +123,7 @@ $(document).ready(function() {
 
             var isFieldEmpty = false;
 
-            var $fileInput = $group.find('input[name="thumbnailFile"]');
+            var $fileInput = $group.find('.file');
             if ($fileInput.length > 0) {
                 var fileVal = $fileInput.val();
                 var $img = $('#imagePreview');

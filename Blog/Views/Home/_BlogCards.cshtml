@@ -1,0 +1,36 @@
+@model IEnumerable<DtoLayer.Dtos.HomeDtos.BlogCardDto>
+@using System.Globalization
+@{
+    var tr = CultureInfo.GetCultureInfo("tr-TR");
+}
+@foreach (var blog in Model)
+{
+    <a href="/makale/@blog.Slug" class="post-card">
+        <div class="thumb">
+            @if (!string.IsNullOrWhiteSpace(blog.Thumbnail))
+            {
+                <img src="@blog.Thumbnail" alt="@blog.Title" loading="lazy" width="300" height="300">
+            }
+        </div>
+        <div class="content">
+            <div class="tags">
+                <span class="tag tag--purple">@blog.CategoryName</span>
+            </div>
+            <h2>@blog.Title</h2>
+            <p>@blog.Summary</p>
+            <div class="meta">
+                <div class="author">
+                    @if (!string.IsNullOrWhiteSpace(blog.AuthorImageUrl))
+                    {
+                        <img src="@blog.AuthorImageUrl" alt="@blog.AuthorName">
+                    }
+                    <span>@blog.AuthorName</span>
+                </div>
+                <div class="info">
+                    <span>@blog.ReadingTime dk okuma</span>
+                    <time datetime="@blog.PublishedAt.ToString("yyyy-MM-dd")">@blog.PublishedAt.ToString("dd MMM yyyy", tr)</time>
+                </div>
+            </div>
+        </div>
+    </a>
+}
