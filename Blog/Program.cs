@@ -1,3 +1,5 @@
+using Blog.Identity;
+using Blog.Services;
 using BusinessLayer.Container;
 using DataAccessLayer.Concrete;
 using EntityLayer.Concrete;
@@ -17,7 +19,14 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     options.SignIn.RequireConfirmedAccount = false;
 })
     .AddEntityFrameworkStores<Context>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddClaimsPrincipalFactory<AppUserClaimsPrincipalFactory>();
+
+builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.FromMinutes(1));
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options => options.TokenLifespan = TimeSpan.FromHours(1));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddMemoryCache();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

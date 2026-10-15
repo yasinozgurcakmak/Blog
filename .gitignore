@@ -27,6 +27,7 @@ secrets.json
 *.sln.docstates
 *.userprefs
 
+
 TestResults/
 [Tt]est[Rr]esult*/
 *.trx
@@ -56,3 +57,6 @@ $RECYCLE.BIN/
 
 *.log
 logs/
+
+/Blog/wwwroot/uploads/*
+!/Blog/wwwroot/uploads/**/.gitkeep

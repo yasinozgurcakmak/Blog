@@ -1,0 +1,81 @@
+@model DtoLayer.Dtos.UserDtos.MemberLoginDto
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    var generalErrors = ViewData.ModelState[string.Empty]?.Errors;
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+
+<a href="/" class="btn btn--ghost auth-page__back">
+    &larr; Ana Sayfaya Dön
+</a>
+
+<div class="auth-card">
+    <div class="auth-card__header">
+        <div class="icon">🔒</div>
+        <h2>Tekrar hoş geldin</h2>
+        <p>Yorum yapmaya ve makaleleri kaydetmeye devam etmek için giriş yap.</p>
+    </div>
+
+    <form class="auth-form" id="login-form" method="post" action="/giris-yap@(string.IsNullOrEmpty(returnUrl) ? "" : "?returnUrl=" + Uri.EscapeDataString(returnUrl))">
+        @Html.AntiForgeryToken()
+
+        @if (TempData["LoginSuccess"] is string loginSuccess)
+        {
+            <div class="alert alert--success">
+                <i>✓</i>
+                <div>
+                    <strong>Şifre güncellendi</strong>
+                    <span>@loginSuccess</span>
+                </div>
+            </div>
+        }
+
+        @if (generalErrors is { Count: > 0 })
+        {
+            <div class="alert alert--error" id="login-error">
+                <i>⚠</i>
+                <div>
+                    <strong>Giriş yapılamadı</strong>
+                    @foreach (var error in generalErrors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label asp-for="Email">E-posta Adresi</label>
+            <div class="input-wrapper">
+                <input asp-for="Email" type="email" id="login-email" placeholder="ornek@mail.com" autocomplete="email" required>
+            </div>
+            <span asp-validation-for="Email" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <div class="label-flex">
+                <label asp-for="Password">Şifre</label>
+            </div>
+            <div class="input-wrapper">
+                <input asp-for="Password" type="password" id="login-password" placeholder="••••••••••••" autocomplete="current-password" required>
+                <button type="button" class="btn-toggle-pwd" aria-label="Şifreyi göster/gizle">👁</button>
+            </div>
+            <span asp-validation-for="Password" class="field-error"></span>
+        </div>
+
+        <div class="form-actions">
+            <label class="checkbox-label">
+                <input asp-for="RememberMe" type="checkbox">
+                <span>Beni hatırla</span>
+            </label>
+            <a href="/sifremi-unuttum" class="forgot-link">Şifremi unuttum</a>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--full">Giriş Yap</button>
+    </form>
+
+    <div class="auth-card__footer">
+        Hesabın yok mu? <a href="/uye-ol">Hesap oluştur</a>
+    </div>
+</div>

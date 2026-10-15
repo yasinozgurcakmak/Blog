@@ -65,7 +65,14 @@ namespace DataAccessLayer.EntityFramework
                     CategoryId = c.Id,
                     CategoryName = c.Name,
                     AuthorName = u.Name + " " + u.Surname,
-                    AuthorImageUrl = u.ImageUrl
+                    AuthorImageUrl = u.ImageUrl,
+                    AuthorHeadline = u.Headline,
+                    AuthorBio = u.Bio,
+                    AuthorGithubUrl = u.GithubUrl,
+                    AuthorInstagramUrl = u.InstagramUrl,
+                    AuthorXUrl = u.XUrl,
+                    AuthorFacebookUrl = u.FacebookUrl,
+                    AuthorWebsiteUrl = u.WebsiteUrl
                 };
 
             return query.FirstOrDefault();

@@ -1,0 +1,182 @@
+@model DtoLayer.Dtos.UserDtos.ProfileEditDto
+@{
+    ViewData["Title"] = "Profilini Güncelle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var avatarFallback = "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString($"{Model.Name} {Model.Surname}".Trim()) + "&background=random&color=fff&size=160";
+    var hasImage = !string.IsNullOrEmpty(Model.ExistingImageUrl) && !Model.RemoveImage;
+    var savedMessage = TempData["ProfileSaved"] as string;
+    var generalErrors = ViewData.ModelState[string.Empty]?.Errors;
+}
+
+<header class="profile-header">
+    <div class="profile-header__eyebrow">
+        <span>HESAP</span>
+        <i>//</i>
+        <span>PROFİL</span>
+    </div>
+    <div class="profile-header__title">
+        <div>
+            <h1>Profilini Güncelle</h1>
+            <p>Profil fotoğrafını, ad soyad bilgilerini ve sosyal medya bağlantılarını yönet.</p>
+        </div>
+    </div>
+</header>
+
+<div class="profile-layout">
+    <aside class="profile-layout__sidebar">
+        <nav class="profile-nav">
+            <a href="/profili-guncelle" class="profile-nav__item profile-nav__item--active">
+                <div class="info">
+                    <i class="icon">👤</i>
+                    <span>Profil Bilgileri</span>
+                </div>
+            </a>
+        </nav>
+    </aside>
+
+    <section class="profile-layout__content">
+        @if (!string.IsNullOrEmpty(savedMessage))
+        {
+            <div class="alert alert--success" id="profile-alert">
+                <i>✓</i>
+                <div>
+                    <strong>Kaydedildi</strong>
+                    <span>@savedMessage</span>
+                </div>
+            </div>
+        }
+        @if (generalErrors is { Count: > 0 })
+        {
+            <div class="alert alert--error">
+                <i>⚠</i>
+                <div>
+                    <strong>Kaydedilemedi</strong>
+                    @foreach (var error in generalErrors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <form class="profile-form" id="profile-form" method="post" action="/profili-guncelle" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="RemoveImage" id="remove-image" />
+
+            <div class="form-section form-section--avatar">
+                <label class="form-section__label">Profil Fotoğrafı</label>
+                <div class="avatar-upload">
+                    <div class="avatar-preview">
+                        <img id="avatar-img" src="@(hasImage ? Model.ExistingImageUrl : avatarFallback)" alt="@Model.Name @Model.Surname" data-fallback-base="https://ui-avatars.com/api/?background=random&color=fff&size=160&name=" data-has-image="@(hasImage ? "true" : "false")">
+                    </div>
+                    <div class="avatar-actions">
+                        <div class="buttons">
+                            <input asp-for="ProfileImage" type="file" id="profile-image" accept=".jpg,.jpeg,.png,.webp" hidden>
+                            <button type="button" class="btn btn--outline" id="btn-upload">
+                                <i>📷</i> Yeni Fotoğraf Yükle
+                            </button>
+                            <button type="button" class="btn btn--danger-ghost" id="btn-remove-image" @(hasImage ? "" : "hidden")>
+                                <i>🗑</i> Kaldır
+                            </button>
+                        </div>
+                        <p>JPG, PNG veya WEBP. En fazla 2MB. Önerilen boyut 400x400px.</p>
+                        <span asp-validation-for="ProfileImage" class="field-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label asp-for="Name">Ad <span class="required">*</span></label>
+                        <input asp-for="Name" type="text" id="profile-name" maxlength="50" autocomplete="given-name" required>
+                        <span asp-validation-for="Name" class="field-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Surname">Soyad <span class="required">*</span></label>
+                        <input asp-for="Surname" type="text" id="profile-surname" maxlength="50" autocomplete="family-name" required>
+                        <span asp-validation-for="Surname" class="field-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="profile-email">E-posta Adresi</label>
+                <div class="input-icon">
+                    <i class="icon">✉</i>
+                    <input type="email" id="profile-email" value="@Model.Email" readonly>
+                </div>
+                <p class="hint">E-posta adresin giriş için kullanıldığından buradan değiştirilemez.</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Headline">Rol / Ünvan</label>
+                <input asp-for="Headline" type="text" id="profile-headline" maxlength="@Blog.ValidationRules.ProfileEditValidator.MaxHeadlineLength" placeholder="örn. Backend Geliştirici">
+                <span asp-validation-for="Headline" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <div class="label-flex">
+                    <label asp-for="Bio">Biyografi</label>
+                    <span class="char-count" id="bio-counter">@(Model.Bio?.Length ?? 0) / @Blog.ValidationRules.ProfileEditValidator.MaxBioLength karakter</span>
+                </div>
+                <textarea asp-for="Bio" id="profile-bio" rows="4" maxlength="@Blog.ValidationRules.ProfileEditValidator.MaxBioLength" placeholder="Kendinden kısaca bahset..."></textarea>
+                <span asp-validation-for="Bio" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Sosyal Medya Bağlantıları</label>
+                <div class="grid-2">
+                    <div>
+                        <div class="input-addon">
+                            <span class="addon">GitHub</span>
+                            <input asp-for="GithubUrl" type="text" inputmode="url" autocomplete="url" placeholder="https://github.com/kullaniciadi">
+                        </div>
+                        <span asp-validation-for="GithubUrl" class="field-error"></span>
+                    </div>
+                    <div>
+                        <div class="input-addon">
+                            <span class="addon">Instagram</span>
+                            <input asp-for="InstagramUrl" type="text" inputmode="url" autocomplete="url" placeholder="https://instagram.com/kullaniciadi">
+                        </div>
+                        <span asp-validation-for="InstagramUrl" class="field-error"></span>
+                    </div>
+                    <div>
+                        <div class="input-addon">
+                            <span class="addon">X</span>
+                            <input asp-for="XUrl" type="text" inputmode="url" autocomplete="url" placeholder="https://x.com/kullaniciadi">
+                        </div>
+                        <span asp-validation-for="XUrl" class="field-error"></span>
+                    </div>
+                    <div>
+                        <div class="input-addon">
+                            <span class="addon">Facebook</span>
+                            <input asp-for="FacebookUrl" type="text" inputmode="url" autocomplete="url" placeholder="https://facebook.com/kullaniciadi">
+                        </div>
+                        <span asp-validation-for="FacebookUrl" class="field-error"></span>
+                    </div>
+                    <div>
+                        <div class="input-addon">
+                            <span class="addon">Web Sitesi</span>
+                            <input asp-for="WebsiteUrl" type="text" inputmode="url" autocomplete="url" placeholder="https://ornek.com">
+                        </div>
+                        <span asp-validation-for="WebsiteUrl" class="field-error"></span>
+                    </div>
+                </div>
+                <p class="hint">Profilinin tam linkini yapıştır, örn. <span>https://github.com/kullaniciadi</span></p>
+            </div>
+
+            <div class="form-actions-bar">
+                <div></div>
+                <div class="buttons">
+                    <a href="/" class="btn btn--outline">Vazgeç</a>
+                    <button type="submit" class="btn btn--primary" id="save-btn">
+                        <i id="save-icon">✓</i>
+                        <span id="save-label">Değişiklikleri Kaydet</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </section>
+</div>

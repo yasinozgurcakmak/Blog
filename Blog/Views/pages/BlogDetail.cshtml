@@ -15,6 +15,19 @@
 
     var encodedUrl = Uri.EscapeDataString(pageUrl);
     var encodedTitle = Uri.EscapeDataString(Model.Title);
+
+    var authorAvatar = string.IsNullOrWhiteSpace(Model.AuthorImageUrl)
+        ? "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(Model.AuthorName.Trim()) + "&background=random&color=fff&size=160"
+        : Model.AuthorImageUrl;
+
+    var authorLinks = new[]
+    {
+        (Url: Model.AuthorGithubUrl, Title: "GitHub", Short: "GH"),
+        (Url: Model.AuthorInstagramUrl, Title: "Instagram", Short: ""),
+        (Url: Model.AuthorXUrl, Title: "X (Twitter)", Short: "𝕏"),
+        (Url: Model.AuthorFacebookUrl, Title: "Facebook", Short: "ⓕ"),
+        (Url: Model.AuthorWebsiteUrl, Title: "Web Sitesi", Short: "🌐︎")
+    }.Where(l => !string.IsNullOrWhiteSpace(l.Url)).ToList();
 }
 
 @section Head {
@@ -142,24 +155,29 @@
                 <i></i>
             </div>
             <div class="author-info">
-                @if (!string.IsNullOrWhiteSpace(Model.AuthorImageUrl))
-                {
-                    <img src="@Model.AuthorImageUrl" alt="@Model.AuthorName">
-                }
+                <img src="@authorAvatar" alt="@Model.AuthorName">
                 <div>
                     <h4>@Model.AuthorName</h4>
-                    <p>Senior Web Developer</p>
-                    <small>1.3k Takipçi</small>
+                    <p>@(string.IsNullOrWhiteSpace(Model.AuthorHeadline) ? "Yazar" : Model.AuthorHeadline)</p>
                 </div>
             </div>
-            <p class="bio">Staff Engineer & Tech Enthusiast writing deep dives on modern web architectures.</p>
-            <div class="author-actions">
-                <div class="socials">
-                    <a href="#">X</a>
-                    <a href="#">in</a>
+            @if (!string.IsNullOrWhiteSpace(Model.AuthorBio))
+            {
+                <p class="bio">@Model.AuthorBio</p>
+            }
+            @if (authorLinks.Count > 0)
+            {
+                    
+                <div class="author-actions">
+                    <p>İletişim ve Sosyal Medya</p>
+                    <div class="socials">
+                        @foreach (var link in authorLinks)
+                        {
+                            <a href="@link.Url" target="_blank" rel="noopener noreferrer nofollow" title="@link.Title" aria-label="@link.Title">@link.Title <svg fill="#94a3b8" width="15px" height="15px" viewBox="-5.5 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>external</title> <path d="M15.656 8.5l-10.438 10.5 2.188 2.219 10.469-10.469 1.938 1.906c0.531 0.531 1 0.375 1-0.438v-5.656c0-0.5-0.438-0.969-0.969-0.969h-5.656c-0.813 0-1 0.469-0.469 1zM16.813 23.031v-7.094h2.375v7.906c0 1.406-1.156 2.563-2.563 2.563h-14.063c-1.406 0-2.563-1.156-2.563-2.563v-14.094c0-1.406 1.156-2.563 2.563-2.531h8.656v2.375h-7.844c-0.5 0-0.969 0.469-0.969 0.969v12.469c0 0.5 0.469 0.969 0.969 0.969h12.469c0.5 0 0.969-0.469 0.969-0.969z"></path> </g></svg></a>
+                        }
+                    </div>
                 </div>
-                <button class="btn btn--primary btn--sm">+ Takip Et</button>
-            </div>
+            }
         </div>
 
 

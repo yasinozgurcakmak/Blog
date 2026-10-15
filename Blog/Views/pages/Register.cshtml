@@ -1,0 +1,112 @@
+@model DtoLayer.Dtos.UserDtos.UserRegisterDto
+@{
+    ViewData["Title"] = "Üye Ol";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    var generalErrors = ViewData.ModelState[string.Empty]?.Errors;
+}
+<a href="/" class="btn btn--ghost auth-page__back">
+    &larr; Ana Sayfaya Dön
+</a>
+
+<div class="auth-card">
+    <div class="auth-card__header">
+        <div class="icon">👤</div>
+        <h2>Hesap oluştur</h2>
+        <p>Yorum yapmak ve makaleleri kaydetmek için topluluğumuza katıl.</p>
+    </div>
+
+
+    <form class="auth-form" id="register-form" method="post" action="/uye-ol">
+        @Html.AntiForgeryToken()
+
+        @if (generalErrors is { Count: > 0 })
+        {
+            <div class="alert alert--error">
+                <i>⚠</i>
+                <div>
+                    <strong>Kayıt tamamlanamadı</strong>
+                    @foreach (var error in generalErrors)
+                    {
+                        <span>@error.ErrorMessage</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="form-row">
+            <div class="form-group">
+                <label asp-for="Name">Ad</label>
+                <div class="input-wrapper">
+                    <input asp-for="Name" id="reg-name" placeholder="örn. Ahmet" autocomplete="given-name" maxlength="50" required>
+                </div>
+                <span asp-validation-for="Name" class="field-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Surname">Soyad</label>
+                <div class="input-wrapper">
+                    <input asp-for="Surname" id="reg-surname" placeholder="örn. Yılmaz" autocomplete="family-name" maxlength="50" required>
+                </div>
+                <span asp-validation-for="Surname" class="field-error"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email">E-posta Adresi</label>
+            <div class="input-wrapper">
+                <input asp-for="Email" type="email" id="reg-email" placeholder="ornek@mail.com" autocomplete="email" required>
+            </div>
+            <span asp-validation-for="Email" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <div class="label-flex">
+                <label asp-for="Password">Şifre</label>
+                <span class="pwd-status" id="pwd-status"></span>
+            </div>
+            <div class="input-wrapper">
+                <input asp-for="Password" type="password" id="reg-password" placeholder="••••••••••••" autocomplete="new-password" required>
+                <button type="button" class="btn-toggle-pwd" aria-label="Şifreyi göster/gizle">👁</button>
+            </div>
+            <div class="strength-meter" id="strength-meter" data-level="0">
+                <div class="bars">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="strength-text">
+                    <span id="strength-hint">8+ karakter, büyük/küçük harf, rakam ve sembol</span>
+                    <strong id="strength-percent"></strong>
+                </div>
+            </div>
+            <span asp-validation-for="Password" class="field-error"></span>
+        </div>
+
+        <div class="form-group">
+            <div class="label-flex">
+                <label asp-for="ConfirmPassword">Şifre Tekrarı</label>
+                <span class="pwd-status" id="confirm-status"></span>
+            </div>
+            <div class="input-wrapper">
+                <input asp-for="ConfirmPassword" type="password" id="reg-password-confirm" placeholder="••••••••••••" autocomplete="new-password" required>
+                <button type="button" class="btn-toggle-pwd" aria-label="Şifreyi göster/gizle">👁</button>
+            </div>
+            <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+        </div>
+
+        <div class="form-actions form-actions--terms">
+            <label class="checkbox-label">
+                <input asp-for="AcceptTerms" type="checkbox" required>
+                <span><a href="javascript:;">Kullanım Koşulları</a>'nı ve <a href="javascript:;">Gizlilik Politikası</a>'nı kabul ediyorum.</span>
+            </label>
+        </div>
+        <span asp-validation-for="AcceptTerms" class="field-error"></span>
+
+        <button type="submit" class="btn btn--primary btn--full">Hesap Oluştur</button>
+    </form>
+
+    <div class="auth-card__footer">
+        Zaten hesabın var mı? <a href="/giris-yap">Giriş yap</a>
+    </div>
+</div>

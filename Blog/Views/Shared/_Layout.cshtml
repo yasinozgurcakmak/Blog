@@ -20,8 +20,20 @@
             </div>
 
             <div class="actions">
-                <a href="/giris-yap" class="btn btn--ghost">Giriş Yap</a>
-                <a href="/uye-ol" class="btn btn--primary">Üye Ol</a>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    var fullName = $"{User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value} {User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value}".Trim();
+                    <a href="/profili-guncelle" class="btn btn--ghost">@(string.IsNullOrEmpty(fullName) ? User.Identity.Name : fullName)</a>
+                    <form method="post" action="/cikis-yap" style="display: inline;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn--primary">Çıkış Yap</button>
+                    </form>
+                }
+                else
+                {
+                    <a href="/giris-yap" class="btn btn--ghost">Giriş Yap</a>
+                    <a href="/uye-ol" class="btn btn--primary">Üye Ol</a>
+                }
             </div>
         </div>
     </header>

@@ -17,4 +17,11 @@ public class BlogDetailDto
     public string CategoryName { get; set; } = string.Empty;
     public string AuthorName { get; set; } = string.Empty;
     public string? AuthorImageUrl { get; set; }
+    public string? AuthorHeadline { get; set; }
+    public string? AuthorBio { get; set; }
+    public string? AuthorGithubUrl { get; set; }
+    public string? AuthorInstagramUrl { get; set; }
+    public string? AuthorXUrl { get; set; }
+    public string? AuthorFacebookUrl { get; set; }
+    public string? AuthorWebsiteUrl { get; set; }
 }
