@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BusinessLayer.Abstract;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,7 @@ namespace Blog.Controllers
             var cookieName = $"bv_{slug}";
             var countView = !Request.Cookies.ContainsKey(cookieName);
 
-            var blog = blogService.GetBlog(slug, countView);
+            var blog = blogService.GetBlog(slug, countView, GetUserId());
             if (blog is null) return NotFound();
 
             if (countView)
@@ -30,5 +31,19 @@ namespace Blog.Controllers
 
             return View("~/Views/pages/BlogDetail.cshtml", blog);
         }
+
+        [HttpPost("/makale/{id:int}/alkis")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ToggleLike(int id)
+        {
+            if (GetUserId() is not int userId) return Unauthorized();
+
+            var result = blogService.ToggleLike(id, userId);
+            if (result is null) return NotFound();
+
+            return Json(result);
+        }
+
+        private int? GetUserId() => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
     }
 }

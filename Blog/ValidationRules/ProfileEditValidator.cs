@@ -41,7 +41,6 @@ public class ProfileEditValidator : AbstractValidator<ProfileEditDto>
         if (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp) return false;
         if (allowedHosts.Length == 0) return uri.Host.Contains('.');
 
-        // Profil linki olmalı: sadece "https://github.com/" kabul edilmez
         var host = uri.Host.StartsWith("www.") ? uri.Host[4..] : uri.Host;
         return allowedHosts.Contains(host, StringComparer.OrdinalIgnoreCase) && uri.AbsolutePath.Trim('/').Length > 0;
     }

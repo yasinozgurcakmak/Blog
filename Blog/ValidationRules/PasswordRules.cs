@@ -6,7 +6,7 @@ public static class PasswordRules
 {
     public const int MinLength = 8;
 
-    // auth.js'teki anlık güç göstergesiyle aynı kurallar
+  
     public static IRuleBuilderOptions<T, string> StrongPassword<T>(this IRuleBuilder<T, string> rule) => rule
         .NotEmpty().WithMessage("Şifre zorunludur.")
         .MinimumLength(MinLength).WithMessage($"Şifre en az {MinLength} karakter olmalıdır.")

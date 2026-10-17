@@ -44,6 +44,10 @@
     <meta name="twitter:card" content="@(imageUrl is null ? "summary" : "summary_large_image")">
 }
 
+@section Scripts {
+    <script src="~/assets/js/blog-detail.js" asp-append-version="true"></script>
+}
+
 <div class="container container--article">
     <article class="article-view">
 
@@ -86,7 +90,19 @@
 
         <div class="article-footer">
             <div class="reactions">
-                <button class="btn-action">👏 482 Alkış</button>
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="button" id="clap-btn" class="btn-action@(Model.IsLiked ? " is-active" : "")"
+                            data-url="/makale/@Model.Id/alkis" aria-pressed="@(Model.IsLiked ? "true" : "false")"
+                            title="@(Model.IsLiked ? "Alkışı geri al" : "Alkışla")">
+                        👏 <span id="clap-count">@Model.LikeCount</span> Alkış
+                    </button>
+                }
+                else
+                {
+                    <a href="/giris-yap?returnUrl=@Uri.EscapeDataString("/makale/" + Model.Slug)" class="btn-action" title="Alkışlamak için giriş yapın">👏 @Model.LikeCount Alkış</a>
+                }
             </div>
             <div class="social-share">
                 <span>Share this:</span>

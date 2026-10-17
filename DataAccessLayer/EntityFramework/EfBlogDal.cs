@@ -59,6 +59,7 @@ namespace DataAccessLayer.EntityFramework
                     Thumbnail = b.Thumbnail,
                     ReadingTime = b.ReadingTime,
                     ViewCount = b.ViewCount,
+                    LikeCount = context.BlogLikes.Count(l => l.BlogId == b.Id),
                     MetaTitle = b.MetaTitle,
                     MetaDescription = b.MetaDescription,
                     PublishedAt = b.PublishDate ?? b.CreatedDate,
@@ -83,5 +84,34 @@ namespace DataAccessLayer.EntityFramework
         {
             context.Blogs.Where(b => b.Id == id).ExecuteUpdate(s => s.SetProperty(b => b.ViewCount, b => b.ViewCount + 1));
         }
+
+        public bool IsPublished(int id)
+        {
+            var now = DateTime.Now;
+            return context.Blogs.Any(b => b.Id == id && b.Status && (b.PublishDate == null || b.PublishDate <= now));
+        }
+
+        public bool HasLiked(int blogId, int userId) =>
+            context.BlogLikes.Any(l => l.BlogId == blogId && l.AppUserId == userId);
+
+        public bool ToggleLike(int blogId, int userId)
+        {
+            var removed = context.BlogLikes.Where(l => l.BlogId == blogId && l.AppUserId == userId).ExecuteDelete();
+            if (removed > 0) return false;
+
+            var like = new BlogLike { BlogId = blogId, AppUserId = userId, CreatedDate = DateTime.Now };
+            context.BlogLikes.Add(like);
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                context.Entry(like).State = EntityState.Detached;
+            }
+            return true;
+        }
+
+        public int GetLikeCount(int blogId) => context.BlogLikes.Count(l => l.BlogId == blogId);
     }
 }

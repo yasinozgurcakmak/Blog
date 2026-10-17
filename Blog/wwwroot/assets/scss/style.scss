@@ -410,8 +410,11 @@ img {
     .reactions {
       @include FlexBox(); gap: 0.75rem;
       .btn-action {
-        padding: 0.5rem 0.875rem; background: rgba(15, 23, 42, 1); border: 1px solid rgba(30, 41, 59, 1); @include rounded(0.5rem); color: #cbd5e1; font-size: 0.875rem; font-weight: 500; cursor: pointer; @include easing(0.2s);
+        display: inline-block; padding: 0.5rem 0.875rem; background: rgba(15, 23, 42, 1); border: 1px solid rgba(30, 41, 59, 1); @include rounded(0.5rem); color: #cbd5e1; font-size: 0.875rem; font-weight: 500; text-decoration: none; cursor: pointer; @include easing(0.2s);
         &:hover { color: #fff; border-color: $primary; }
+        &:focus-visible { outline: 2px solid $primary; outline-offset: 2px; }
+        &.is-active { color: #fff; background: rgba(99, 102, 241, 0.15); border-color: $primary; }
+        &:disabled { cursor: wait; }
       }
     }
     .social-share {
@@ -863,7 +866,6 @@ img {
 }
 
 
-// Şifremi unuttum / şifre sıfırlama
 .auth-card {
   .auth-note {
     @include FlexBox(); gap: 0.5rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid rgba(51, 65, 85, 0.6);

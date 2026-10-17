@@ -9,5 +9,9 @@ namespace DataAccessLayer.Abstract
         List<BlogCardDto> GetBlogCards(int? categoryId, int skip, int take);
         BlogDetailDto? GetBlog(string slug);
         void IncrementViewCount(int id);
+        bool IsPublished(int id);
+        bool HasLiked(int blogId, int userId);
+        bool ToggleLike(int blogId, int userId);
+        int GetLikeCount(int blogId);
     }
 }

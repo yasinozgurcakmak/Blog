@@ -10,6 +10,8 @@ public class BlogDetailDto
     public string? Thumbnail { get; set; }
     public int ReadingTime { get; set; }
     public int ViewCount { get; set; }
+    public int LikeCount { get; set; }
+    public bool IsLiked { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
     public DateTime PublishedAt { get; set; }

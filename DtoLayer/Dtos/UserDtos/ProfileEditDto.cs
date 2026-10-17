@@ -7,7 +7,6 @@ public class ProfileEditDto
     public string Name { get; set; } = string.Empty;
     public string Surname { get; set; } = string.Empty;
 
-    // Yalnızca gösterim için; e-posta aynı zamanda kullanıcı adı olduğundan bu formdan değiştirilmez
     public string? Email { get; set; }
 
     public string? Headline { get; set; }
