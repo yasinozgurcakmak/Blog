@@ -1,3 +1,5 @@
+using DtoLayer.Dtos.CommentDtos;
+
 namespace DtoLayer.Dtos.HomeDtos;
 
 public class BlogDetailDto
@@ -26,4 +28,6 @@ public class BlogDetailDto
     public string? AuthorXUrl { get; set; }
     public string? AuthorFacebookUrl { get; set; }
     public string? AuthorWebsiteUrl { get; set; }
+    public List<CommentDto> Comments { get; set; } = new();
+    public int CommentCount { get; set; }
 }

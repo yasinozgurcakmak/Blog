@@ -26,6 +26,15 @@
 
         @RenderBody()
     </main>
+
+    @* Onay ve uyarı mesajları için ortak Fancybox dialogu; functions.js içindeki showConfirm/showAlert kullanır. *@
+    <div id="fbDialog" style="display:none; max-width: 420px;">
+        <p id="fbDialogMessage" style="margin-bottom: 15px; line-height: 1.5;"></p>
+        <div class="row">
+            <button type="button" id="fbDialogCancel" class="btn">Vazgeç</button>
+            <button type="button" id="fbDialogConfirm" class="btn btn-delete">Sil</button>
+        </div>
+    </div>
     <script src="~/admin/assets/js/fancybox/fancybox.umd.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/js/all.min.js" integrity="sha512-2+f4MxT8KwN4tUzw6/hv9kxKiix603S9kmBcix+0y0dBhd6zdaPOV1Thf1DM886pFZG+cAtmshBi8UBpo6m3JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

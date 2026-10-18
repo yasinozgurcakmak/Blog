@@ -19,6 +19,9 @@ namespace BusinessLayer.Container
             services.AddScoped<ICategoryService, CategoryManager>();
             services.AddScoped<ICategoryDal, EfCategoryDal>();
 
+            services.AddScoped<ICommentService, CommentManager>();
+            services.AddScoped<ICommentDal, EfCommentDal>();
+
             services.AddAutoMapper(cfg => cfg.AddProfile<BusinessLayer.Mapping.AutoMapperProfile>());
         }
     }

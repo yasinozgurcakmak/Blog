@@ -43,7 +43,7 @@
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <a href="#rolePopup" data-fancybox="" data-user-id="@item.User.Id" class="btn btn-roles">⚙ Roller</a>
-                                    <form method="post" action="/blgpnl/kullanicilar/sil/@item.User.Id" style="display:inline;" onsubmit="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
+                                    <form method="post" action="/blgpnl/kullanicilar/sil/@item.User.Id" style="display:inline;" data-confirm="Bu kullanıcıyı silmek istediğinize emin misiniz?">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-delete">✕ Sil</button>
                                     </form>
@@ -142,9 +142,7 @@
                     }
 
                     setTimeout(function () {
-                        if (typeof $.fancybox !== 'undefined') {
-                            $.fancybox.close();
-                        }
+                        Fancybox.close();
                     }, 1500);
                 } else {
                     msg.style.color = 'red';

@@ -3,7 +3,7 @@
     ViewData["Title"] = "Giriş Yap";
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
     var generalErrors = ViewData.ModelState[string.Empty]?.Errors;
-    var returnUrl = ViewData["ReturnUrl"] as string;
+    var geldigiSayfa = ViewData["geldigiSayfa"] as string;
 }
 
 <a href="/" class="btn btn--ghost auth-page__back">
@@ -17,7 +17,7 @@
         <p>Yorum yapmaya ve makaleleri kaydetmeye devam etmek için giriş yap.</p>
     </div>
 
-    <form class="auth-form" id="login-form" method="post" action="/giris-yap@(string.IsNullOrEmpty(returnUrl) ? "" : "?returnUrl=" + Uri.EscapeDataString(returnUrl))">
+    <form class="auth-form" id="login-form" method="post" action="/giris-yap@(string.IsNullOrEmpty(geldigiSayfa) ? "" : "?geldigiSayfa=" + Uri.EscapeDataString(geldigiSayfa))">
         @Html.AntiForgeryToken()
 
         @if (TempData["LoginSuccess"] is string loginSuccess)
@@ -46,11 +46,11 @@
         }
 
         <div class="form-group">
-            <label asp-for="Email">E-posta Adresi</label>
+            <label asp-for="UserNameOrEmail">Kullanıcı Adı veya E-posta</label>
             <div class="input-wrapper">
-                <input asp-for="Email" type="email" id="login-email" placeholder="ornek@mail.com" autocomplete="email" required>
+                <input asp-for="UserNameOrEmail" type="text" id="login-email" placeholder="ornek@mail.com" autocomplete="username" required>
             </div>
-            <span asp-validation-for="Email" class="field-error"></span>
+            <span asp-validation-for="UserNameOrEmail" class="field-error"></span>
         </div>
 
         <div class="form-group">

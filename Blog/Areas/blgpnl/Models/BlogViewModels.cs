@@ -1,4 +1,5 @@
 using DtoLayer.Dtos.BlogDtos;
+using DtoLayer.Dtos.CommentDtos;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Blog.Areas.blgpnl.Models;
@@ -17,4 +18,6 @@ public sealed class BlogCreateViewModel : BlogFormViewModelBase
 public sealed class BlogEditViewModel : BlogFormViewModelBase
 {
     public UpdateBlogDto Dto { get; set; } = new();
+    public List<CommentDto> Comments { get; set; } = [];
+    public int CommentCount { get; set; }
 }

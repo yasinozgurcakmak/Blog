@@ -21,6 +21,8 @@
                 <td>İsim</td>
                 <td>Yayınlama/Güncelleme Tarihi</td>
                 <td>Yayında</td>
+                <td>Görüntülenme</td>
+                <td>Yorum</td>
                 <td>Aksiyon</td>
             </tr>
         </thead>
@@ -33,9 +35,11 @@
                         <td>@item.Title</td>
                         <td>@item.CreatedDate.ToString("dd MMMM yyyy") @(item.UpdatedDate.HasValue ? " / " + item.UpdatedDate.Value.ToString("dd MMMM yyyy") : "")</td>
                         <td>@(!item.Status ? "Yayında Değil" : (item.PublishDate.HasValue && item.PublishDate.Value > DateTime.Now ? $"Zamanlandı ({item.PublishDate.Value.ToString("dd.MM.yyyy HH:mm")})" : "Yayında"))</td>
+                        <td>@item.ViewCount</td>
+                        <td><a href="/blgpnl/yazilar/duzenle/@item.Slug#yorumlar">@item.CommentCount</a></td>
                         <td class="row">
                             <a href="/blgpnl/yazilar/duzenle/@item.Slug" class="btn btn-edit">Düzenle</a>
-                            <form method="post" action="/blgpnl/yazilar/sil/@item.Id" style="display:inline;" onsubmit="return confirm('Bu blog yazısını silmek istediğinize emin misiniz?');">
+                            <form method="post" action="/blgpnl/yazilar/sil/@item.Id" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-delete">Sil</button>
                             </form>
@@ -46,7 +50,7 @@
             else
             {
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 20px;">Henüz blog yazısı bulunmamaktadır.</td>
+                    <td colspan="6" style="text-align: center; padding: 20px;">Henüz blog yazısı bulunmamaktadır.</td>
                 </tr>
             }
         </tbody>

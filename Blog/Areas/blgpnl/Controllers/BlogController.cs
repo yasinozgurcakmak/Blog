@@ -18,6 +18,7 @@ namespace Blog.Areas.blgpnl.Controllers;
 public class BlogController(
     IBlogService blogService,
     ICategoryService categoryService,
+    ICommentService commentService,
     UserManager<AppUser> userManager,
     IWebHostEnvironment webHostEnvironment,
     IMapper mapper,
@@ -31,6 +32,11 @@ public class BlogController(
     {
         var blogs = blogService.TGetList().OrderByDescending(x => x.CreatedDate).ToList();
         var dtoList = mapper.Map<List<BlogListDto>>(blogs);
+        var commentCounts = commentService.GetCommentCounts();
+        foreach (var dto in dtoList)
+        {
+            dto.CommentCount = commentCounts.GetValueOrDefault(dto.Id);
+        }
         return View(dtoList);
     }
 
@@ -42,12 +48,15 @@ public class BlogController(
         var values = string.IsNullOrWhiteSpace(searchTerm)
             ? blogService.TGetList()
             : blogService.TGetListByFilter(x => x.Title.Contains(searchTerm));
+        var commentCounts = commentService.GetCommentCounts();
 
         var result = values.OrderByDescending(x => x.CreatedDate).Select(x => new
         {
             id = x.Id,
             title = x.Title,
             slug = x.Slug,
+            viewCount = x.ViewCount,
+            commentCount = commentCounts.GetValueOrDefault(x.Id),
             dateFormatted = x.CreatedDate.ToString("dd MMMM yyyy", TurkishCulture) + (x.UpdatedDate.HasValue ? " / " + x.UpdatedDate.Value.ToString("dd MMMM yyyy", TurkishCulture) : string.Empty),
             statusText = !x.Status ? "Yayında Değil" : (x.PublishDate.HasValue && x.PublishDate.Value > DateTime.Now ? $"Zamanlandı ({x.PublishDate.Value:dd.MM.yyyy HH:mm})" : "Yayında")
         });
@@ -134,6 +143,7 @@ public class BlogController(
         var dto = mapper.Map<UpdateBlogDto>(value);
         var vm = new BlogEditViewModel { Dto = dto };
         vm.Categories = BuildCategoryList(dto.CategoryId);
+        (vm.Comments, vm.CommentCount) = commentService.GetCommentTree(dto.Id, null);
         return View(vm);
     }
 
@@ -154,6 +164,7 @@ public class BlogController(
             }
             var vm = new BlogEditViewModel { Dto = dto };
             vm.Categories = BuildCategoryList(dto.CategoryId);
+            (vm.Comments, vm.CommentCount) = commentService.GetCommentTree(dto.Id, null);
             return View(vm);
         }
 
@@ -194,6 +205,18 @@ public class BlogController(
             blogService.TDelete(item);
         }
         return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Route("yorum-sil/{id}")]
+    public IActionResult DeleteComment(int id)
+    {
+        var blogId = commentService.DeleteCommentWithReplies(id);
+        var blog = blogId is int bid ? blogService.TGetByID(bid) : null;
+        if (blog is null) return RedirectToAction("Index");
+
+        return Redirect($"/blgpnl/yazilar/duzenle/{blog.Slug}#yorumlar");
     }
 
     private static string ResolveSlug(string? slug, string title) => !string.IsNullOrWhiteSpace(slug) ? GenerateSlugHelper.GenerateSlug(slug) : GenerateSlugHelper.GenerateSlug(title);

@@ -16,4 +16,6 @@ public class BlogListDto
     public DateTime? PublishDate { get; set; }
     public DateTime CreatedDate { get; set; }
     public DateTime? UpdatedDate { get; set; }
+    public int ViewCount { get; set; }
+    public int CommentCount { get; set; }
 }

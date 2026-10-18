@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Blog.Controllers
 {
-    public class BlogController(IBlogService blogService) : Controller
+    public class BlogController(IBlogService blogService, ICommentService commentService) : Controller
     {
         private static readonly TimeSpan ViewCookieLifetime = TimeSpan.FromHours(24);
 
@@ -13,9 +13,12 @@ namespace Blog.Controllers
         {
             var cookieName = $"bv_{slug}";
             var countView = !Request.Cookies.ContainsKey(cookieName);
+            var userId = GetUserId();
 
-            var blog = blogService.GetBlog(slug, countView, GetUserId());
+            var blog = blogService.GetBlog(slug, countView, userId);
             if (blog is null) return NotFound();
+
+            (blog.Comments, blog.CommentCount) = commentService.GetCommentTree(blog.Id, userId);
 
             if (countView)
             {

@@ -1,7 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
     Fancybox.bind("[data-fancybox]", {});
-    
 
+
+});
+
+var fbDialogAction = null;
+
+function openFbDialog(message, confirmText, isDanger, onConfirm) {
+    document.getElementById('fbDialogMessage').textContent = message;
+    var confirmBtn = document.getElementById('fbDialogConfirm');
+    confirmBtn.textContent = confirmText;
+    confirmBtn.classList.toggle('btn-delete', isDanger);
+    confirmBtn.classList.toggle('btn-edit', !isDanger);
+    document.getElementById('fbDialogCancel').style.display = onConfirm ? '' : 'none';
+    fbDialogAction = onConfirm;
+    Fancybox.show([{ src: '#fbDialog', type: 'inline' }]);
+}
+
+function showConfirm(message, onConfirm) { openFbDialog(message, 'Sil', true, onConfirm); }
+function showAlert(message) { openFbDialog(message, 'Tamam', false, null); }
+
+document.addEventListener('click', function (e) {
+    if (e.target.id !== 'fbDialogCancel' && e.target.id !== 'fbDialogConfirm') return;
+
+    var action = e.target.id === 'fbDialogConfirm' ? fbDialogAction : null;
+    fbDialogAction = null;
+    Fancybox.close();
+    if (action) action();
+});
+
+document.addEventListener('submit', function (e) {
+    var form = e.target;
+    if (!form.matches('form[data-confirm]')) return;
+
+    e.preventDefault();
+    showConfirm(form.dataset.confirm, function () { form.submit(); });
 });
 
 $(document).ready(function() {
@@ -258,11 +291,11 @@ $(document).ready(function() {
                 if (response.success) {
                     $('#summernote').summernote('insertImage', response.url);
                 } else {
-                    alert('Görsel yüklenirken hata oluştu: ' + response.message);
+                    showAlert('Görsel yüklenirken hata oluştu: ' + response.message);
                 }
             },
             error: function () {
-                alert('Görsel yüklenirken sunucu hatası oluştu.');
+                showAlert('Görsel yüklenirken sunucu hatası oluştu.');
             }
         });
     }
@@ -298,9 +331,11 @@ $(document).ready(function() {
                             '<td>' + escapeHtml(item.title) + '</td>' +
                             '<td>' + escapeHtml(item.dateFormatted) + '</td>' +
                             '<td>' + escapeHtml(item.statusText) + '</td>' +
+                            '<td>' + item.viewCount + '</td>' +
+                            '<td><a href="/blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '#yorumlar">' + item.commentCount + '</a></td>' +
                             '<td class="row">' +
                                 '<a href="/blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '" class="btn btn-edit">Düzenle</a> ' +
-                                '<form method="post" action="/blgpnl/yazilar/sil/' + item.id + '" style="display:inline;" onsubmit="return confirm(\'Bu blog yazısını silmek istediğinize emin misiniz?\');">' +
+                                '<form method="post" action="/blgpnl/yazilar/sil/' + item.id + '" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">' +
                                     '<input type="hidden" name="__RequestVerificationToken" value="' + token + '" />' +
                                     '<button type="submit" class="btn btn-delete">Sil</button>' +
                                 '</form>' +
@@ -309,7 +344,7 @@ $(document).ready(function() {
                         $tbody.append(rowHtml);
                     });
                 } else {
-                    $tbody.append('<tr><td colspan="4" style="text-align: center; padding: 20px; color: #666;">Aramaya uygun blog yazısı bulunamadı.</td></tr>');
+                    $tbody.append('<tr><td colspan="6" style="text-align: center; padding: 20px; color: #666;">Aramaya uygun blog yazısı bulunamadı.</td></tr>');
                 }
             },
             error: function (xhr, status, error) {

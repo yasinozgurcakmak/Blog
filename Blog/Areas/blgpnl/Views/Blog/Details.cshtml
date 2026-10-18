@@ -3,6 +3,63 @@
     ViewData["Title"] = "Blog Yazısını Düzenle";
     Layout = "~/Areas/blgpnl/Views/Shared/_Layout.cshtml";
     var hasThumbnail = !string.IsNullOrEmpty(Model.Dto.ExistingThumbnail);
+    var tr = System.Globalization.CultureInfo.GetCultureInfo("tr-TR");
+
+    const int CommentPreviewLength = 100;
+
+    int CountReplies(DtoLayer.Dtos.CommentDtos.CommentDto comment) => comment.Replies.Sum(r => 1 + CountReplies(r));
+
+    string ShortenComment(string content)
+    {
+        var length = char.IsHighSurrogate(content[CommentPreviewLength - 1]) ? CommentPreviewLength - 1 : CommentPreviewLength;
+        return content[..length].TrimEnd() + "...";
+    }
+
+    async Task RenderCommentRows(List<DtoLayer.Dtos.CommentDtos.CommentDto> comments, int depth)
+    {
+        foreach (var comment in comments)
+        {
+            var replyCount = CountReplies(comment);
+            var confirmText = replyCount > 0
+                ? $"Bu yorum ve altındaki {replyCount} cevap kalıcı olarak silinecek. Emin misiniz?"
+                : "Bu yorum kalıcı olarak silinecek. Emin misiniz?";
+            <tr>
+                <td style="padding-left: @(12 + depth * 24)px;">
+                    @if (depth > 0)
+                    {
+                        <span>↳</span>
+                    }
+                    @if (comment.IsDeleted)
+                    {
+                        <em style="color: #888;">Kullanıcı tarafından silindi</em>
+                    }
+                    else if (comment.Content.Length > CommentPreviewLength)
+                    {
+                        <span>@ShortenComment(comment.Content)</span>
+                        <a href="#comment-full-@comment.Id" data-fancybox="comment-@comment.Id" style="color: #2196F3; white-space: nowrap;">Tamamını oku</a>
+                        <div id="comment-full-@comment.Id" style="display:none; max-width: 640px;">
+                            <p style="margin-bottom: 10px;"><strong>@comment.AuthorName</strong> · @comment.CreatedDate.ToString("dd MMMM yyyy HH:mm", tr)</p>
+                            <p style="white-space: pre-line; line-height: 1.6;">@comment.Content</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <span style="white-space: pre-line;">@comment.Content</span>
+                    }
+                </td>
+                <td>@comment.AuthorName</td>
+                <td>@comment.CreatedDate.ToString("dd MMMM yyyy HH:mm", tr)</td>
+                <td>@comment.LikeCount</td>
+                <td>
+                    <form method="post" action="/blgpnl/yazilar/yorum-sil/@comment.Id" data-confirm="@confirmText">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-delete">Sil</button>
+                    </form>
+                </td>
+            </tr>
+            await RenderCommentRows(comment.Replies, depth + 1);
+        }
+    }
 }
 
 <section class="edit-section">
@@ -108,5 +165,31 @@
                 <a href="/blgpnl/yazilar" class="btn btn-delete">İptal</a>
             </div>
         </form>
+    </div>
+
+    <div class="edit-form-wrapper" id="yorumlar">
+        <h1>Yorumlar (@Model.CommentCount)</h1>
+
+        @if (Model.Comments.Count == 0)
+        {
+            <p>Bu yazıya henüz yorum yapılmamış.</p>
+        }
+        else
+        {
+            <table>
+                <thead>
+                    <tr>
+                        <td>Yorum</td>
+                        <td>Kullanıcı</td>
+                        <td>Tarih</td>
+                        <td>Beğeni</td>
+                        <td>Aksiyon</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ await RenderCommentRows(Model.Comments, 0); }
+                </tbody>
+            </table>
+        }
     </div>
 </section>

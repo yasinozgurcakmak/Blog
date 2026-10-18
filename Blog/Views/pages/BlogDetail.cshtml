@@ -1,5 +1,6 @@
 ﻿@model DtoLayer.Dtos.HomeDtos.BlogDetailDto
 @using System.Globalization
+@using DtoLayer.Dtos.CommentDtos
 @{
     var tr = CultureInfo.GetCultureInfo("tr-TR");
     var viewCount = Model.ViewCount >= 1000
@@ -101,7 +102,7 @@
                 }
                 else
                 {
-                    <a href="/giris-yap?returnUrl=@Uri.EscapeDataString("/makale/" + Model.Slug)" class="btn-action" title="Alkışlamak için giriş yapın">👏 @Model.LikeCount Alkış</a>
+                    <a href="/giris-yap?geldigiSayfa=@Uri.EscapeDataString("/makale/" + Model.Slug)" class="btn-action" title="Alkışlamak için giriş yapın">👏 @Model.LikeCount Alkış</a>
                 }
             </div>
             <div class="social-share">
@@ -112,55 +113,144 @@
             </div>
         </div>
 
-        <section class="comments-section">
+        @{
+            
+            const int MaxIndentDepth = 3;
+            var isAuthenticated = User.Identity?.IsAuthenticated == true;
+            var loginUrl = "/giris-yap?geldigiSayfa=" + Uri.EscapeDataString("/makale/" + Model.Slug);
+
+            string CommentAvatar(CommentDto comment) => string.IsNullOrWhiteSpace(comment.AuthorImageUrl)
+                ? "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(comment.AuthorName.Trim()) + "&background=random&color=fff&size=80"
+                : comment.AuthorImageUrl;
+
+            async Task RenderThread(List<CommentDto> comments, int depth)
+            {
+                foreach (var comment in comments)
+                {
+                    await RenderComment(comment, depth);
+                    if (depth >= MaxIndentDepth) await RenderThread(comment.Replies, depth + 1);
+                }
+            }
+
+            async Task RenderComment(CommentDto comment, int depth)
+            {
+                <div class="comment@(comment.IsDeleted ? " comment--deleted" : "")" id="comment-@comment.Id">
+                    @if (!comment.IsDeleted)
+                    {
+                        <img src="@CommentAvatar(comment)" alt="">
+                    }
+                    <div class="comment__body">
+                        @if (comment.IsDeleted)
+                        {
+                            <p class="comment__text">Bu yorum silindi.</p>
+                        }
+                        else
+                        {
+                            <div class="head">
+                                <h5>@comment.AuthorName <span>@(string.IsNullOrWhiteSpace(comment.AuthorHeadline) ? "" : comment.AuthorHeadline + " • ")@comment.CreatedDate.ToString("dd MMM yyyy HH:mm", tr)</span></h5>
+                                @if (comment.IsOwner)
+                                {
+                                    <div class="comment-menu">
+                                        <button type="button" class="comment-menu__toggle" aria-expanded="false" aria-label="Yorum seçenekleri">...</button>
+                                        <form class="comment-menu__list" method="post" action="/makale/@Model.Slug/yorum/@comment.Id/sil" hidden>
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit">Yorumu sil</button>
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+                            @if (depth > MaxIndentDepth && comment.ReplyToName is not null)
+                            {
+                                <p class="comment__reply-to">Yanıtlanan: @comment.ReplyToName</p>
+                            }
+                            <p class="comment__text">@comment.Content</p>
+                            <div class="foot">
+                                @if (isAuthenticated)
+                                {
+                                    <button type="button" class="comment-like@(comment.IsLiked ? " is-active" : "")" data-url="/yorum/@comment.Id/begen"
+                                            aria-pressed="@(comment.IsLiked ? "true" : "false")" aria-label="Beğen">❤️ <span>@comment.LikeCount</span></button>
+                                    <button type="button" class="comment-reply" data-comment-id="@comment.Id" aria-expanded="false">Cevapla</button>
+                                }
+                                else
+                                {
+                                    <a href="@loginUrl" title="Beğenmek için giriş yapın">❤️ @comment.LikeCount</a>
+                                    <a href="@loginUrl">Cevapla</a>
+                                }
+                            </div>
+                        }
+                        @if (depth < MaxIndentDepth && comment.Replies.Count > 0)
+                        {
+                            <div class="comment__replies">
+                                @{ await RenderThread(comment.Replies, depth + 1); }
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+
+        <section class="comments-section" id="comments">
             <div class="comments-section__header">
-                <h3>Yorumlar <span>14</span></h3>
+                <h3>Yorumlar <span>@Model.CommentCount</span></h3>
             </div>
 
-            <div class="locked-banner">
-                <div class="info">
-                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 14.5V16.5M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                    <div>
-                        <h4>Yorum yapabilmek için giriş yapmanız gerekmektedir.</h4>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button class="btn btn--primary">Giriş Yap</button>
-                    <button class="btn btn--primary">Üye Ol</button>
-                </div>
-            </div>
+            @if (TempData["CommentError"] is string commentError)
+            {
+                <p class="comment-alert" role="alert">@commentError</p>
+            }
 
-            <div class="comments-list">
-                <div class="comment">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq0wGHpG2nstD10vc614CNFGY-vsAw7F5Fv4840N-pmt2BOSFkzW5-kc8N3XV2QNlL8XPnbnwJklrOoLI8O129b_4mAQLTZ6ywvSM_h2E339x1pMAfE22fw3MdfIX3kkpJWQENircy9Cv8jjHJ1IFw1zsYJmaML0T9h-t7VwZ3-rUP-gw_nJkhEUyn5-DjkgBdo8Q5Q2nMn-I6PGU8wTJVNStA-RlwD6yEkT6xGdA08z-tImR3VV5A" alt="Sarah">
-                    <div class="comment__body">
-                        <div class="head">
-                            <h5>Sarah Jenkins <span>Senior SRE â€¢ 2h ago</span></h5>
-                            <button>...</button>
-                        </div>
-                        <p>Totally agree regarding edge runtimes. We recently migrated our catalog rendering to regional workers and observed a 65% reduction in P99 TTFB globally.</p>
-                        <div class="foot">
-                            <button> ❤️ 24</button>
-                            <button>Cevapla</button>
-                        </div>
+            @if (isAuthenticated)
+            {
+                <form class="comment-form" method="post" action="/makale/@Model.Slug/yorum" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="BlogId" value="@Model.Id">
+                    <textarea name="Content" rows="3" maxlength="1000" placeholder="Düşüncelerini paylaş..." aria-label="Yorumun"></textarea>
+                    <p class="comment-form__error" role="alert" hidden>Yorum boş olamaz.</p>
+                    <div class="comment-form__actions">
+                        <button type="submit" class="btn btn--primary">Yorum Yap</button>
                     </div>
-                </div>
+                </form>
 
-                <div class="comment">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOQKtRynWBWg3gRxkgi1YKveHxAzqp0x6ZF5exuo_pCp9RydulJC74dCTX4Ubd-Pko7829_kaTe_oPmfbwWX4s7nHsOb7odKkxYBOYxt5xujhuruvPhxtTi4fTqWR1TzlfQwGlNPXk5QAbgGWZwXw3aEoyPNeiAYPLKyw6uGB8YjZl6e34_4h-gPDVeYxpAAIFOKzlJXZ_62bOxiGAOfvcKU_UUY8oyYQo6ZqPiRqkpDrY1eyrCAEi" alt="Marcus">
-                    <div class="comment__body">
-                        <div class="head">
-                            <h5>Marcus Vance <span>Design Systems Lead â€¢ 5h ago</span></h5>
-                            <button>...</button>
+                <template id="reply-form-template">
+                    <form class="comment-form comment-form--reply" method="post" action="/makale/@Model.Slug/yorum" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="BlogId" value="@Model.Id">
+                        <input type="hidden" name="ParentCommentId" value="">
+                        <textarea name="Content" rows="2" maxlength="1000" placeholder="Cevabını yaz..." aria-label="Cevabın"></textarea>
+                        <p class="comment-form__error" role="alert" hidden>Cevap boş olamaz.</p>
+                        <div class="comment-form__actions">
+                            <button type="button" class="btn btn--ghost comment-form__cancel">İptal</button>
+                            <button type="submit" class="btn btn--primary">Gönder</button>
                         </div>
-                        <p>How do you handle token sync between Figma variables and the automated build pipelines when relying on edge hydration?</p>
-                        <div class="foot">
-                            <button>❤️ 8</button>
-                            <button>Cevapla</button>
+                    </form>
+                </template>
+            }
+            else
+            {
+                <div class="locked-banner">
+                    <div class="info">
+                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 14.5V16.5M7 10.0288C7.47142 10 8.05259 10 8.8 10H15.2C15.9474 10 16.5286 10 17 10.0288M7 10.0288C6.41168 10.0647 5.99429 10.1455 5.63803 10.327C5.07354 10.6146 4.6146 11.0735 4.32698 11.638C4 12.2798 4 13.1198 4 14.8V16.2C4 17.8802 4 18.7202 4.32698 19.362C4.6146 19.9265 5.07354 20.3854 5.63803 20.673C6.27976 21 7.11984 21 8.8 21H15.2C16.8802 21 17.7202 21 18.362 20.673C18.9265 20.3854 19.3854 19.9265 19.673 19.362C20 18.7202 20 17.8802 20 16.2V14.8C20 13.1198 20 12.2798 19.673 11.638C19.3854 11.0735 18.9265 10.6146 18.362 10.327C18.0057 10.1455 17.5883 10.0647 17 10.0288M7 10.0288V8C7 5.23858 9.23858 3 12 3C14.7614 3 17 5.23858 17 8V10.0288" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                        <div>
+                            <h4>Yorum yapabilmek için giriş yapmanız gerekmektedir.</h4>
                         </div>
                     </div>
+                    <div class="actions">
+                        <a href="@loginUrl" class="btn btn--primary">Giriş Yap</a>
+                        <a href="/uye-ol" class="btn btn--primary">Üye Ol</a>
+                    </div>
                 </div>
-            </div>
+            }
+
+            @if (Model.Comments.Count == 0)
+            {
+                <p class="comments-empty">@(isAuthenticated ? "Henüz yorum yok. İlk yorumu sen yaz." : "Henüz yorum yok.")</p>
+            }
+            else
+            {
+                <div class="comments-list">
+                    @{ await RenderThread(Model.Comments, 0); }
+                </div>
+            }
         </section>
     </article>
 

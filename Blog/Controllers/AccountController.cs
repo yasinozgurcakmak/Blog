@@ -9,43 +9,46 @@ namespace Blog.Controllers;
 public class AccountController(
     SignInManager<AppUser> signInManager,
     UserManager<AppUser> userManager,
+    RoleManager<AppRole> roleManager,
     IValidator<UserRegisterDto> registerValidator,
     IValidator<MemberLoginDto> loginValidator) : Controller
 {
     private const string LoginView = "~/Views/pages/Login.cshtml";
     private const string RegisterView = "~/Views/pages/Register.cshtml";
+    private const string DefaultRole = "User";
 
     [HttpGet("/giris-yap")]
-    public IActionResult Login(string? returnUrl = null)
+    public IActionResult Login(string? geldigiSayfa = null)
     {
         if (User.Identity?.IsAuthenticated == true) return Redirect("/");
 
-        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["geldigiSayfa"] = geldigiSayfa;
         return View(LoginView, new MemberLoginDto());
     }
 
     [HttpPost("/giris-yap")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(MemberLoginDto dto, string? returnUrl = null)
+    public async Task<IActionResult> Login(MemberLoginDto dto, string? geldigiSayfa = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["geldigiSayfa"] = geldigiSayfa;
 
         if (!AddValidationErrors(loginValidator.Validate(dto))) return View(LoginView, dto);
 
-        var user = await userManager.FindByEmailAsync(dto.Email.Trim());
+        var userNameOrEmail = dto.UserNameOrEmail.Trim();
+        var user = await userManager.FindByEmailAsync(userNameOrEmail) ?? await userManager.FindByNameAsync(userNameOrEmail);
         if (user is null)
         {
-            ModelState.AddModelError(string.Empty, "E-posta adresi veya şifre hatalı.");
+            ModelState.AddModelError(string.Empty, "Kullanıcı adı/e-posta veya şifre hatalı.");
             return View(LoginView, dto);
         }
 
         var result = await signInManager.PasswordSignInAsync(user, dto.Password, dto.RememberMe, lockoutOnFailure: true);
 
-        if (result.Succeeded) return Url.IsLocalUrl(returnUrl) ? Redirect(returnUrl) : Redirect("/");
+        if (result.Succeeded) return Url.IsLocalUrl(geldigiSayfa) ? Redirect(geldigiSayfa) : Redirect("/");
 
         ModelState.AddModelError(string.Empty, result.IsLockedOut
             ? "Çok fazla hatalı deneme yaptınız. Hesabınız geçici olarak kilitlendi, lütfen daha sonra tekrar deneyin."
-            : "E-posta adresi veya şifre hatalı.");
+            : "Kullanıcı adı/e-posta veya şifre hatalı.");
         return View(LoginView, dto);
     }
 
@@ -97,6 +100,12 @@ public class AccountController(
             }
             return View(RegisterView, dto);
         }
+
+        if (!await roleManager.RoleExistsAsync(DefaultRole))
+        {
+            await roleManager.CreateAsync(new AppRole { Name = DefaultRole });
+        }
+        await userManager.AddToRoleAsync(user, DefaultRole);
 
         await signInManager.SignInAsync(user, isPersistent: false);
         return Redirect("/");

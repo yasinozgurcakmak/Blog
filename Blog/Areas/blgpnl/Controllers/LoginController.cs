@@ -27,10 +27,11 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
             return View(dto);
         }
 
-        var user = await userManager.FindByNameAsync(dto.UserName);
+        var userNameOrEmail = dto.UserName.Trim();
+        var user = await userManager.FindByEmailAsync(userNameOrEmail) ?? await userManager.FindByNameAsync(userNameOrEmail);
         if (user is null)
         {
-            ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı.");
+            ModelState.AddModelError(string.Empty, "Kullanıcı adı/e-posta veya şifre hatalı.");
             return View(dto);
         }
 
@@ -52,7 +53,7 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
             return View(dto);
         }
 
-        ModelState.AddModelError(string.Empty, "Kullanıcı adı veya şifre hatalı.");
+        ModelState.AddModelError(string.Empty, "Kullanıcı adı/e-posta veya şifre hatalı.");
         return View(dto);
     }
 

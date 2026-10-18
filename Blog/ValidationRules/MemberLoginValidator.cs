@@ -7,7 +7,7 @@ public class MemberLoginValidator : AbstractValidator<MemberLoginDto>
 {
     public MemberLoginValidator()
     {
-        RuleFor(x => x.Email).NotEmpty().WithMessage("E-posta adresi zorunludur.").EmailAddress().WithMessage("Geçerli bir e-posta adresi giriniz.");
+        RuleFor(x => x.UserNameOrEmail).NotEmpty().WithMessage("Kullanıcı adı veya e-posta adresi zorunludur.");
         RuleFor(x => x.Password).NotEmpty().WithMessage("Şifre zorunludur.");
     }
 }
