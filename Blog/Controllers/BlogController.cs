@@ -47,6 +47,26 @@ namespace Blog.Controllers
             return Json(result);
         }
 
+        [HttpPost("/makale/{id:int}/kaydet")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ToggleBookmark(int id)
+        {
+            if (GetUserId() is not int userId) return Unauthorized();
+
+            var bookmarked = blogService.ToggleBookmark(id, userId);
+            if (bookmarked is null) return NotFound();
+
+            return Json(new { bookmarked });
+        }
+
+        [HttpGet("/kaydedilenler")]
+        public IActionResult Bookmarks()
+        {
+            if (GetUserId() is not int userId) return Redirect("/giris-yap?geldigiSayfa=" + Uri.EscapeDataString("/kaydedilenler"));
+
+            return View("~/Views/pages/Bookmarks.cshtml", blogService.GetBookmarkedBlogCards(userId));
+        }
+
         private int? GetUserId() => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
     }
 }

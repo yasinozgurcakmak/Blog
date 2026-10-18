@@ -13,5 +13,8 @@ namespace DataAccessLayer.Abstract
         bool HasLiked(int blogId, int userId);
         bool ToggleLike(int blogId, int userId);
         int GetLikeCount(int blogId);
+        bool HasBookmarked(int blogId, int userId);
+        bool ToggleBookmark(int blogId, int userId);
+        List<BlogCardDto> GetBookmarkedBlogCards(int userId);
     }
 }

@@ -264,6 +264,12 @@ img {
   background: #161f30;
   color: #fff;
 }
+.btn--icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.625rem;
+}
 .btn--primary {
   color: #fff;
   background: linear-gradient(to right, #6366f1, #7c3aed, #4f46e5);
@@ -312,6 +318,31 @@ img {
   -webkit-border-radius: 0.75rem;
   -moz-border-radius: 0.75rem;
   background: transparent;
+}
+.feed__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+.feed .empty-state {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  border-radius: 1rem;
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  border: 1px dashed #334155;
+}
+.feed .empty-state h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+.feed .empty-state p {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  max-width: 28rem;
+  margin: 0 auto 1.25rem;
 }
 
 .tag {
@@ -825,9 +856,29 @@ img {
   color: #fff;
   border-color: rgba(99, 102, 241, 0.5);
 }
+.article-view .article-header .article-meta .share-actions .btn-action:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
 .article-view .article-header .article-meta .share-actions .btn-action i {
   color: #f43f5e;
   font-style: normal;
+}
+.article-view .article-header .article-meta .share-actions .btn-bookmark {
+  color: #fff;
+}
+.article-view .article-header .article-meta .share-actions .btn-bookmark .btn-bookmark__fill {
+  display: none;
+}
+.article-view .article-header .article-meta .share-actions .btn-bookmark.is-active {
+  color: #818cf8;
+  border-color: rgba(99, 102, 241, 0.5);
+}
+.article-view .article-header .article-meta .share-actions .btn-bookmark.is-active .btn-bookmark__fill {
+  display: inline;
+}
+.article-view .article-header .article-meta .share-actions .btn-bookmark:disabled {
+  cursor: wait;
 }
 .article-view .article-hero {
   position: relative;

@@ -80,7 +80,19 @@
 
                 <div class="share-actions">
                     <span class="btn-action" title="Görüntülenme"><svg height="10px" width="10px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 277.58 277.58" xml:space="preserve" fill="#fff" stroke="#fff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path style="fill:#fff;" d="M138.46,164.287c-38.628,0-69.925-37.519-69.925-83.767C68.535,34.277,99.832,0,138.46,0 c38.634,0,69.957,34.277,69.957,80.52C208.417,126.768,177.093,164.287,138.46,164.287z M29.689,277.528 c0,0-14.832,0.979-21.365-8.023c-3.53-4.863-1.071-14.718,1.343-20.217l5.912-13.473c0,0,16.35-36.567,34.962-57.757 c11.433-12.994,25.031-10.035,33.826-5.809c5.417,2.6,11.542,10.176,16.018,14.191c6.168,5.532,17.057,11.819,34.859,12.173h10.922 c17.791-0.354,28.68-6.641,34.843-12.173c4.471-4.014,10.427-11.825,15.795-14.511c8.072-4.041,20.358-6.527,31.492,6.13 c18.618,21.191,33.363,58.421,33.363,58.421l6.059,13.212c2.507,5.461,5.075,15.267,1.643,20.195 c-6.124,8.811-19.874,7.642-19.874,7.642S29.689,277.528,29.689,277.528z"></path> </g> </g></svg> @viewCount</span>
-                    <button class="btn-action" title="Bookmark"><svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z" fill="#ffffff"></path> </g></svg></button>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <button type="button" id="bookmark-btn" class="btn-action btn-bookmark@(Model.IsBookmarked ? " is-active" : "")" data-url="/makale/@Model.Id/kaydet"
+                                aria-pressed="@(Model.IsBookmarked ? "true" : "false")" title="@(Model.IsBookmarked ? "Kayıtlardan çıkar" : "Kaydet")" aria-label="@(Model.IsBookmarked ? "Kayıtlardan çıkar" : "Kaydet")">
+                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="btn-bookmark__fill" d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z" fill="currentColor"></path></svg>
+                        </button>
+                    }
+                    else
+                    {
+                        <a href="/giris-yap?geldigiSayfa=@Uri.EscapeDataString("/makale/" + Model.Slug)" class="btn-action btn-bookmark" title="Kaydetmek için giriş yapın" aria-label="Kaydetmek için giriş yapın">
+                            <svg width="25px" height="25px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z" fill="currentColor"></path></svg>
+                        </a>
+                    }
                 </div>
             </div>
         </header>

@@ -113,5 +113,54 @@ namespace DataAccessLayer.EntityFramework
         }
 
         public int GetLikeCount(int blogId) => context.BlogLikes.Count(l => l.BlogId == blogId);
+
+        public bool HasBookmarked(int blogId, int userId) =>
+            context.BlogBookmarks.Any(k => k.BlogId == blogId && k.AppUserId == userId);
+
+        public bool ToggleBookmark(int blogId, int userId)
+        {
+            var removed = context.BlogBookmarks.Where(k => k.BlogId == blogId && k.AppUserId == userId).ExecuteDelete();
+            if (removed > 0) return false;
+
+            var bookmark = new BlogBookmark { BlogId = blogId, AppUserId = userId, CreatedDate = DateTime.Now };
+            context.BlogBookmarks.Add(bookmark);
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                context.Entry(bookmark).State = EntityState.Detached;
+            }
+            return true;
+        }
+
+        public List<BlogCardDto> GetBookmarkedBlogCards(int userId)
+        {
+            var now = DateTime.Now;
+            var query =
+                from k in context.BlogBookmarks.AsNoTracking()
+                join b in context.Blogs.AsNoTracking() on k.BlogId equals b.Id
+                join c in context.Category.AsNoTracking() on b.CategoryId equals c.Id
+                join u in context.Users.AsNoTracking() on b.AppUserId equals u.Id
+                where k.AppUserId == userId && b.Status && (b.PublishDate == null || b.PublishDate <= now)
+                orderby k.CreatedDate descending, k.Id descending
+                select new BlogCardDto
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Slug = b.Slug,
+                    Summary = b.Summary,
+                    Thumbnail = b.Thumbnail,
+                    ReadingTime = b.ReadingTime,
+                    PublishedAt = b.PublishDate ?? b.CreatedDate,
+                    CategoryId = c.Id,
+                    CategoryName = c.Name,
+                    AuthorName = u.Name + " " + u.Surname,
+                    AuthorImageUrl = u.ImageUrl
+                };
+
+            return query.ToList();
+        }
     }
 }

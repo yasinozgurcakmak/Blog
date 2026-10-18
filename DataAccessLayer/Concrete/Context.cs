@@ -11,6 +11,7 @@ namespace DataAccessLayer.Concrete
         public DbSet<Category> Category { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogLike> BlogLikes { get; set; }
+        public DbSet<BlogBookmark> BlogBookmarks { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
 
@@ -23,6 +24,13 @@ namespace DataAccessLayer.Concrete
                 e.HasIndex(l => new { l.BlogId, l.AppUserId }).IsUnique();
                 e.HasOne<Blog>().WithMany().HasForeignKey(l => l.BlogId).OnDelete(DeleteBehavior.Cascade);
                 e.HasOne<AppUser>().WithMany().HasForeignKey(l => l.AppUserId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<BlogBookmark>(e =>
+            {
+                e.HasIndex(b => new { b.AppUserId, b.BlogId }).IsUnique();
+                e.HasOne<Blog>().WithMany().HasForeignKey(b => b.BlogId).OnDelete(DeleteBehavior.Cascade);
+                e.HasOne<AppUser>().WithMany().HasForeignKey(b => b.AppUserId).OnDelete(DeleteBehavior.Cascade);
             });
 
 

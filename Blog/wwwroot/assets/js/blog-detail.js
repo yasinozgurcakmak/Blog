@@ -1,4 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const btn = document.getElementById('bookmark-btn');
+    if (!btn) return;
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+    btn.addEventListener('click', async function () {
+        if (btn.disabled) return;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(btn.dataset.url, {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token }
+            });
+
+            if (res.status === 401) {
+                window.location.href = '/giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+            if (!res.ok) throw new Error(res.status);
+
+            const data = await res.json();
+            const label = data.bookmarked ? 'Kayıtlardan çıkar' : 'Kaydet';
+            btn.classList.toggle('is-active', data.bookmarked);
+            btn.setAttribute('aria-pressed', data.bookmarked ? 'true' : 'false');
+            btn.setAttribute('aria-label', label);
+            btn.title = label;
+        } catch (e) {
+            btn.title = 'Kaydedilemedi, tekrar deneyin';
+        } finally {
+            btn.disabled = false;
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('clap-btn');
     if (!btn) return;
 

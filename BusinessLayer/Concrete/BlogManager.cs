@@ -48,7 +48,11 @@ public class BlogManager(IBlogDal blogDal) : IBlogService
             detail.ViewCount++;
         }
 
-        if (userId is int id) detail.IsLiked = blogDal.HasLiked(detail.Id, id);
+        if (userId is int id)
+        {
+            detail.IsLiked = blogDal.HasLiked(detail.Id, id);
+            detail.IsBookmarked = blogDal.HasBookmarked(detail.Id, id);
+        }
         return detail;
     }
 
@@ -59,4 +63,12 @@ public class BlogManager(IBlogDal blogDal) : IBlogService
         var liked = blogDal.ToggleLike(blogId, userId);
         return new BlogLikeResultDto { Liked = liked, LikeCount = blogDal.GetLikeCount(blogId) };
     }
+
+    public bool? ToggleBookmark(int blogId, int userId)
+    {
+        if (!blogDal.IsPublished(blogId)) return null;
+        return blogDal.ToggleBookmark(blogId, userId);
+    }
+
+    public List<BlogCardDto> GetBookmarkedBlogCards(int userId) => blogDal.GetBookmarkedBlogCards(userId);
 }
