@@ -23,7 +23,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.19" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="4.1.1" />
+    <PackageReference Include="SkiaSharp" Version="4.153.1" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.153.1" />
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
   </ItemGroup>

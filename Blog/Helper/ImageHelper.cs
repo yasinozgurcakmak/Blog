@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Webp;
+using SkiaSharp;
 using System;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,9 @@ namespace Blog.Helper;
 
 public static class ImageHelper
 {
-    private static readonly WebpEncoder WebpEncoderSettings = new() { Quality = 80 };
+    private const int WebpQuality = 80;
+
+    private const int MaxWebpDimension = 16383;
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private static readonly string[] AllowedContentTypes = ["image/jpeg", "image/png", "image/webp", "image/pjpeg", "image/x-png"];
 
@@ -21,9 +22,13 @@ public static class ImageHelper
         var fileName = $"{fileNamePrefix}_{Guid.NewGuid().ToString("N")[..8]}.webp";
         var savePath = Path.Combine(folderPath, fileName);
 
-        using var inputStream = file.OpenReadStream();
-        using var image = await Image.LoadAsync(inputStream);
-        await image.SaveAsync(savePath, WebpEncoderSettings);
+        using var buffer = new MemoryStream();
+        await file.CopyToAsync(buffer);
+
+        using var webp = EncodeAsWebp(buffer.ToArray());
+        await using var output = File.Create(savePath);
+        await using var webpStream = webp.AsStream();
+        await webpStream.CopyToAsync(output);
 
         return fileName;
     }
@@ -35,10 +40,26 @@ public static class ImageHelper
         var fileName = $"{fileNamePrefix}_{Guid.NewGuid().ToString("N")[..8]}.webp";
         var savePath = Path.Combine(folderPath, fileName);
 
-        using var image = Image.Load(imageBytes);
-        image.Save(savePath, WebpEncoderSettings);
+        using var webp = EncodeAsWebp(imageBytes);
+        using var output = File.Create(savePath);
+        webp.SaveTo(output);
 
         return fileName;
+    }
+
+    private static SKData EncodeAsWebp(byte[] imageBytes)
+    {
+        using var data = SKData.CreateCopy(imageBytes);
+        using var codec = SKCodec.Create(data) ?? throw new InvalidDataException("Görsel okunamadı veya desteklenmeyen bir formatta.");
+
+        if (codec.Info.Width > MaxWebpDimension || codec.Info.Height > MaxWebpDimension)
+        {
+            throw new InvalidDataException($"Görsel boyutu çok büyük; kenarlar en fazla {MaxWebpDimension} piksel olabilir.");
+        }
+
+        using var bitmap = SKBitmap.Decode(codec) ?? throw new InvalidDataException("Görsel okunamadı.");
+        using var image = SKImage.FromBitmap(bitmap);
+        return image.Encode(SKEncodedImageFormat.Webp, WebpQuality) ?? throw new InvalidOperationException("Görsel WebP formatına dönüştürülemedi.");
     }
 
     public static bool IsValidImage(IFormFile? file, out string? errorMessage, long maxFileSizeBytes = 5 * 1024 * 1024)
