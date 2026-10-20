@@ -17,14 +17,15 @@ using System.Threading.Tasks;
 namespace Blog.Areas.blgpnl.Controllers;
 
 [Area("blgpnl")]
-[Authorize(Roles = "Admin, Editor")]
+[Authorize(Roles = "Admin")]
 [Route("blgpnl/kullanicilar")]
 public class UsersController(
     IAppUserService appUserService,
     UserManager<AppUser> userManager,
     IWebHostEnvironment webHostEnvironment,
     RoleManager<AppRole> roleManager,
-    IMapper mapper) : Controller
+    IMapper mapper,
+    ILogger<UsersController> logger) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Index()
@@ -147,14 +148,27 @@ public class UsersController(
             var user = await userManager.FindByIdAsync(id.ToString());
             if (user is null) return Json(new { success = false, message = "Kullanıcı bulunamadı." });
 
+            selectedRoles = (selectedRoles ?? []).Distinct().ToList();
+            var allRoles = roleManager.Roles.Select(r => r.Name).ToList();
+            if (selectedRoles.Any(r => !allRoles.Contains(r)))
+            {
+                return Json(new { success = false, message = "Geçersiz rol seçimi." });
+            }
+
             var currentRoles = await userManager.GetRolesAsync(user);
+            if (currentRoles.Contains("Admin") && !selectedRoles.Contains("Admin")
+                && (await userManager.GetUsersInRoleAsync("Admin")).Count <= 1)
+            {
+                return Json(new { success = false, message = "Sistemdeki son yöneticinin Admin rolü kaldırılamaz." });
+            }
+
             var removeResult = await userManager.RemoveFromRolesAsync(user, currentRoles);
             if (!removeResult.Succeeded)
             {
                 return Json(new { success = false, message = "Mevcut roller kaldırılamadı: " + string.Join(", ", removeResult.Errors.Select(e => e.Description)) });
             }
 
-            if (selectedRoles is { Count: > 0 })
+            if (selectedRoles.Count > 0)
             {
                 var addResult = await userManager.AddToRolesAsync(user, selectedRoles);
                 if (!addResult.Succeeded)
@@ -163,11 +177,12 @@ public class UsersController(
                 }
             }
 
-            return Json(new { success = true, roles = selectedRoles ?? [] });
+            return Json(new { success = true, roles = selectedRoles });
         }
         catch (Exception ex)
         {
-            return Json(new { success = false, message = "Sunucu hatası: " + ex.Message });
+            logger.LogError(ex, "Kullanıcı {UserId} için roller güncellenirken hata oluştu.", id);
+            return Json(new { success = false, message = "Roller güncellenirken bir sunucu hatası oluştu." });
         }
     }
 

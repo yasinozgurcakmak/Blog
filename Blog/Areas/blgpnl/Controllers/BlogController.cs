@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Globalization;
 namespace Blog.Areas.blgpnl.Controllers;
 
@@ -113,7 +114,9 @@ public class BlogController(
 
     [HttpPost]
     [Route("upload-editor-image")]
-    [IgnoreAntiforgeryToken]
+    [EnableRateLimiting("write")]
+    [RequestSizeLimit(6 * 1024 * 1024)]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadEditorImage(IFormFile file, string? slug)
     {
         if (file is null || file.Length == 0)

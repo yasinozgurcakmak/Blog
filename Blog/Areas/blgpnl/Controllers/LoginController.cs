@@ -3,6 +3,7 @@ using EntityLayer.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,6 +20,7 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
 
     [HttpPost]
     [Route("blgpnl/giris-yap")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Index(UserLoginDto dto)
     {
@@ -35,17 +37,22 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
             return View(dto);
         }
 
-        var roles = await userManager.GetRolesAsync(user);
-        var isAuthorized = roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase) || r.Equals("Editor", StringComparison.OrdinalIgnoreCase));
-        if (!isAuthorized)
+        var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: true);
+
+        if (result.Succeeded)
         {
-            ModelState.AddModelError(string.Empty, $"Bu panele erişim yetkiniz bulunmamaktadır. (Mevcut roller: {string.Join(", ", roles.DefaultIfEmpty("Yok"))})");
-            return View(dto);
+            var roles = await userManager.GetRolesAsync(user);
+            var isAdmin = roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase));
+            var isAuthorized = isAdmin || roles.Any(r => r.Equals("Editor", StringComparison.OrdinalIgnoreCase));
+            if (!isAuthorized)
+            {
+                ModelState.AddModelError(string.Empty, "Bu panele erişim yetkiniz bulunmamaktadır.");
+                return View(dto);
+            }
+
+            await signInManager.SignInAsync(user, isPersistent: false);
+            return Redirect(isAdmin ? "/blgpnl/kullanicilar" : "/blgpnl/yazilar");
         }
-
-        var result = await signInManager.PasswordSignInAsync(user, dto.Password, isPersistent: false, lockoutOnFailure: true);
-
-        if (result.Succeeded) return Redirect("/blgpnl/kullanicilar");
 
         if (result.IsLockedOut)
         {

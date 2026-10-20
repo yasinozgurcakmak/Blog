@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Security.Claims;
+using Blog.Models;
 using BusinessLayer.Abstract;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Blog.Controllers
 {
@@ -16,7 +19,11 @@ namespace Blog.Controllers
             var userId = GetUserId();
 
             var blog = blogService.GetBlog(slug, countView, userId);
-            if (blog is null) return NotFound();
+            if (blog is null)
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            }
 
             (blog.Comments, blog.CommentCount) = commentService.GetCommentTree(blog.Id, userId);
 
@@ -36,6 +43,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost("/makale/{id:int}/alkis")]
+        [EnableRateLimiting("write")]
         [ValidateAntiForgeryToken]
         public IActionResult ToggleLike(int id)
         {
@@ -48,6 +56,7 @@ namespace Blog.Controllers
         }
 
         [HttpPost("/makale/{id:int}/kaydet")]
+        [EnableRateLimiting("write")]
         [ValidateAntiForgeryToken]
         public IActionResult ToggleBookmark(int id)
         {

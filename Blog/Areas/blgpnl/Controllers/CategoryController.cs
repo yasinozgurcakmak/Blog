@@ -11,12 +11,13 @@ using System.Collections.Generic;
 namespace Blog.Areas.blgpnl.Controllers;
 
 [Area("blgpnl")]
-[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin, Editor")]
 [Route("blgpnl/kategoriler")]
 public class CategoryController(
     ICategoryService categoryService,
     IMapper mapper,
-    IValidator<CreateCategoryDto> categoryValidator) : Controller
+    IValidator<CreateCategoryDto> categoryValidator,
+    ILogger<CategoryController> logger) : Controller
 {
     [HttpGet]
     public IActionResult Index()
@@ -51,7 +52,8 @@ public class CategoryController(
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "Kategori eklenirken hata oluştu: " + ex.Message);
+            logger.LogError(ex, "Kategori eklenirken hata oluştu.");
+            ModelState.AddModelError(string.Empty, "Kategori eklenirken bir hata oluştu.");
             return View(dto);
         }
     }

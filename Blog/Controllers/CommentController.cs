@@ -3,6 +3,7 @@ using BusinessLayer.Abstract;
 using DtoLayer.Dtos.CommentDtos;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Blog.Controllers;
 
@@ -11,6 +12,7 @@ public class CommentController(ICommentService commentService, IValidator<Create
     private const string CommentsFragment = "comments";
 
     [HttpPost("/makale/{slug}/yorum")]
+    [EnableRateLimiting("write")]
     [ValidateAntiForgeryToken]
     public IActionResult Create(string slug, CreateCommentDto dto)
     {
@@ -47,6 +49,7 @@ public class CommentController(ICommentService commentService, IValidator<Create
     }
 
     [HttpPost("/yorum/{id:int}/begen")]
+    [EnableRateLimiting("write")]
     [ValidateAntiForgeryToken]
     public IActionResult ToggleLike(int id)
     {

@@ -3,6 +3,7 @@ using EntityLayer.Concrete;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Blog.Controllers;
 
@@ -27,6 +28,7 @@ public class AccountController(
     }
 
     [HttpPost("/giris-yap")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(MemberLoginDto dto, string? geldigiSayfa = null)
     {
@@ -61,6 +63,7 @@ public class AccountController(
     }
 
     [HttpPost("/uye-ol")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(UserRegisterDto dto)
     {

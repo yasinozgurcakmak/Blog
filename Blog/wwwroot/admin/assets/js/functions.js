@@ -284,6 +284,7 @@ $(document).ready(function() {
         $.ajax({
             url: '/blgpnl/yazilar/upload-editor-image',
             type: 'POST',
+            headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').first().val() || '' },
             data: formData,
             contentType: false,
             processData: false,

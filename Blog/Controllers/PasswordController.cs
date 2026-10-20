@@ -6,6 +6,7 @@ using EntityLayer.Concrete;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -37,6 +38,7 @@ public class PasswordController(
     }
 
     [HttpPost("/sifremi-unuttum")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Forgot(ForgotPasswordDto dto)
     {
@@ -83,6 +85,7 @@ public class PasswordController(
     }
 
     [HttpPost("/sifre-sifirla")]
+    [EnableRateLimiting("auth")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Reset(ResetPasswordDto dto)
     {

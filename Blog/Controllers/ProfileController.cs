@@ -4,6 +4,7 @@ using EntityLayer.Concrete;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Blog.Controllers;
 
@@ -40,6 +41,8 @@ public class ProfileController(
     }
 
     [HttpPost(PageUrl)]
+    [EnableRateLimiting("write")]
+    [RequestSizeLimit(3 * 1024 * 1024)]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(ProfileEditDto dto)
     {

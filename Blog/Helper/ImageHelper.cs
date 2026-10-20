@@ -10,8 +10,8 @@ namespace Blog.Helper;
 public static class ImageHelper
 {
     private const int WebpQuality = 80;
-
     private const int MaxWebpDimension = 16383;
+    private const long MaxPixelCount = 40_000_000;
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private static readonly string[] AllowedContentTypes = ["image/jpeg", "image/png", "image/webp", "image/pjpeg", "image/x-png"];
 
@@ -55,6 +55,11 @@ public static class ImageHelper
         if (codec.Info.Width > MaxWebpDimension || codec.Info.Height > MaxWebpDimension)
         {
             throw new InvalidDataException($"Görsel boyutu çok büyük; kenarlar en fazla {MaxWebpDimension} piksel olabilir.");
+        }
+
+        if ((long)codec.Info.Width * codec.Info.Height > MaxPixelCount)
+        {
+            throw new InvalidDataException($"Görsel çözünürlüğü çok yüksek; en fazla {MaxPixelCount / 1_000_000} megapiksel olabilir.");
         }
 
         using var bitmap = SKBitmap.Decode(codec) ?? throw new InvalidDataException("Görsel okunamadı.");
