@@ -61,3 +61,5 @@ logs/
 
 /Blog/wwwroot/uploads/*
 !/Blog/wwwroot/uploads/**/.gitkeep
+# Playwright MCP artifacts
+.playwright-mcp/

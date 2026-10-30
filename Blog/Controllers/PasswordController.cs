@@ -31,7 +31,7 @@ public class PasswordController(
     [HttpGet("/sifremi-unuttum")]
     public IActionResult Forgot()
     {
-        if (User.Identity?.IsAuthenticated == true) return Redirect("/");
+        if (User.Identity?.IsAuthenticated == true) return Redirect(AppUrl("/"));
 
         ViewData["SentTo"] = TempData["ResetSentTo"] as string;
         return View(ForgotView, new ForgotPasswordDto());
@@ -73,7 +73,7 @@ public class PasswordController(
         }
 
         TempData["ResetSentTo"] = dto.Email;
-        return Redirect("/sifremi-unuttum");
+        return Redirect(AppUrl("/sifremi-unuttum"));
     }
 
     [HttpGet("/sifre-sifirla")]
@@ -119,8 +119,10 @@ public class PasswordController(
         await userManager.SetLockoutEndDateAsync(user, null);
 
         TempData["LoginSuccess"] = "Şifren başarıyla güncellendi. Yeni şifrenle giriş yapabilirsin.";
-        return Redirect("/giris-yap");
+        return Redirect(AppUrl("/giris-yap"));
     }
+
+    private string AppUrl(string path) => $"{Request.PathBase}{path}";
 
     private async Task SendResetEmailAsync(AppUser user)
     {

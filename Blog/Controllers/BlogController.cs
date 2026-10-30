@@ -71,7 +71,7 @@ namespace Blog.Controllers
         [HttpGet("/kaydedilenler")]
         public IActionResult Bookmarks()
         {
-            if (GetUserId() is not int userId) return Redirect("/giris-yap?geldigiSayfa=" + Uri.EscapeDataString("/kaydedilenler"));
+            if (GetUserId() is not int userId) return Redirect($"{Request.PathBase}/giris-yap?geldigiSayfa={Uri.EscapeDataString("/kaydedilenler")}");
 
             return View("~/Views/pages/Bookmarks.cshtml", blogService.GetBookmarkedBlogCards(userId));
         }

@@ -14,7 +14,7 @@
         </div>
     }
 
-    <form action="/blgpnl/kategoriler/ekle" method="post">
+    <form action="~/blgpnl/kategoriler/ekle" method="post">
         @Html.AntiForgeryToken()
         <div class="form-group mb-3">
             <label asp-for="Name" class="form-label">Kategori Adı</label>
@@ -24,7 +24,7 @@
 
         <div class="row">
             <button type="submit" class="btn btn-primary">Kaydet</button>
-            <a href="/blgpnl/kategoriler" class="btn btn-secondary">İptal</a>
+            <a href="~/blgpnl/kategoriler" class="btn btn-secondary">İptal</a>
         </div>
     </form>
 </section>

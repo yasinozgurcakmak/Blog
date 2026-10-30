@@ -5,7 +5,7 @@
 }
 @foreach (var blog in Model)
 {
-    <a href="/makale/@blog.Slug" class="post-card">
+    <a href="~/makale/@blog.Slug" class="post-card">
         <div class="thumb">
             @if (!string.IsNullOrWhiteSpace(blog.Thumbnail))
             {

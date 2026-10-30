@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (res.status === 401) {
-                window.location.href = '/giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
+                window.location.href = (window.__BASE_PATH || '/') + 'giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
                 return;
             }
             if (!res.ok) throw new Error(res.status);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (res.status === 401) {
-                window.location.href = '/giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
+                window.location.href = (window.__BASE_PATH || '/') + 'giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
                 return;
             }
             if (!res.ok) throw new Error(res.status);
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
             if (res.status === 401) {
-                window.location.href = '/giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
+                window.location.href = (window.__BASE_PATH || '/') + 'giris-yap?geldigiSayfa=' + encodeURIComponent(window.location.pathname);
                 return;
             }
             if (!res.ok) throw new Error(res.status);

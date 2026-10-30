@@ -69,6 +69,6 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Redirect("/blgpnl/giris-yap");
+        return Redirect(Url.Content("~/blgpnl/giris-yap"));
     }
 }

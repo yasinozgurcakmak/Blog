@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+// Uygulama /blog/ altında yayınlandığında mutlak yolların doğru üretilmesi için.
+var BASE_PATH = typeof window.__BASE_PATH === 'string' ? window.__BASE_PATH : '/';
+
 var fbDialogAction = null;
 
 function openFbDialog(message, confirmText, isDanger, onConfirm) {
@@ -282,7 +285,7 @@ $(document).ready(function() {
         formData.append('slug', currentSlug);
 
         $.ajax({
-            url: '/blgpnl/yazilar/upload-editor-image',
+            url: BASE_PATH + 'blgpnl/yazilar/upload-editor-image',
             type: 'POST',
             headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').first().val() || '' },
             data: formData,
@@ -318,7 +321,7 @@ $(document).ready(function() {
         $('#searchSpinner').show();
 
         activeRequest = $.ajax({
-            url: '/blgpnl/yazilar/ara',
+            url: BASE_PATH + 'blgpnl/yazilar/ara',
             type: 'GET',
             data: { q: query },
             success: function (data) {
@@ -333,10 +336,10 @@ $(document).ready(function() {
                             '<td>' + escapeHtml(item.dateFormatted) + '</td>' +
                             '<td>' + escapeHtml(item.statusText) + '</td>' +
                             '<td>' + item.viewCount + '</td>' +
-                            '<td><a href="/blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '#yorumlar">' + item.commentCount + '</a></td>' +
+                            '<td><a href="' + BASE_PATH + 'blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '#yorumlar">' + item.commentCount + '</a></td>' +
                             '<td class="row">' +
-                                '<a href="/blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '" class="btn btn-edit">Düzenle</a> ' +
-                                '<form method="post" action="/blgpnl/yazilar/sil/' + item.id + '" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">' +
+                                '<a href="' + BASE_PATH + 'blgpnl/yazilar/duzenle/' + encodeURIComponent(item.slug) + '" class="btn btn-edit">Düzenle</a> ' +
+                                '<form method="post" action="' + BASE_PATH + 'blgpnl/yazilar/sil/' + item.id + '" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">' +
                                     '<input type="hidden" name="__RequestVerificationToken" value="' + token + '" />' +
                                     '<button type="submit" class="btn btn-delete">Sil</button>' +
                                 '</form>' +

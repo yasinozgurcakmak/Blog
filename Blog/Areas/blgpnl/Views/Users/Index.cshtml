@@ -39,11 +39,11 @@
                         </td>
                         <td data-label="Aksiyonlar">
                             <div class="action-buttons">
-                                <a href="/blgpnl/kullanicilar/guncelle/@item.User.Id" class="btn btn-edit">✎ Düzenle</a>
+                                <a href="~/blgpnl/kullanicilar/guncelle/@item.User.Id" class="btn btn-edit">✎ Düzenle</a>
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <a href="#rolePopup" data-fancybox="" data-user-id="@item.User.Id" class="btn btn-roles">⚙ Roller</a>
-                                    <form method="post" action="/blgpnl/kullanicilar/sil/@item.User.Id" style="display:inline;" data-confirm="Bu kullanıcıyı silmek istediğinize emin misiniz?">
+                                    <form method="post" action="~/blgpnl/kullanicilar/sil/@item.User.Id" style="display:inline;" data-confirm="Bu kullanıcıyı silmek istediğinize emin misiniz?">
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="btn btn-delete">✕ Sil</button>
                                     </form>

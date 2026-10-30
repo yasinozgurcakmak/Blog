@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 namespace Blog.Areas.blgpnl.Controllers;
 
@@ -48,7 +49,7 @@ public class BlogController(
         var searchTerm = q?.Trim();
         var values = string.IsNullOrWhiteSpace(searchTerm)
             ? blogService.TGetList()
-            : blogService.TGetListByFilter(x => x.Title.Contains(searchTerm));
+            : blogService.TGetListByFilter(x => EF.Functions.ILike(x.Title, $"%{searchTerm}%"));
         var commentCounts = commentService.GetCommentCounts();
 
         var result = values.OrderByDescending(x => x.CreatedDate).Select(x => new
@@ -109,7 +110,7 @@ public class BlogController(
         }
 
         blogService.TInsert(blog);
-        return Redirect("/blgpnl/yazilar");
+        return Redirect(Url.Content("~/blgpnl/yazilar"));
     }
 
     [HttpPost]
@@ -194,7 +195,7 @@ public class BlogController(
         existingBlog.UpdatedDate = DateTime.Now;
 
         blogService.TUpdate(existingBlog);
-        return Redirect("/blgpnl/yazilar");
+        return Redirect(Url.Content("~/blgpnl/yazilar"));
     }
 
     [HttpPost]
@@ -219,7 +220,7 @@ public class BlogController(
         var blog = blogId is int bid ? blogService.TGetByID(bid) : null;
         if (blog is null) return RedirectToAction("Index");
 
-        return Redirect($"/blgpnl/yazilar/duzenle/{blog.Slug}#yorumlar");
+        return Redirect(Url.Content($"~/blgpnl/yazilar/duzenle/{blog.Slug}#yorumlar"));
     }
 
     private static string ResolveSlug(string? slug, string title) => !string.IsNullOrWhiteSpace(slug) ? GenerateSlugHelper.GenerateSlug(slug) : GenerateSlugHelper.GenerateSlug(title);

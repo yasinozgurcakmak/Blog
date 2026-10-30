@@ -7,7 +7,7 @@
 <section>
     <div class="row j-between">
         <h1>Bloglar</h1>
-        <a href="/blgpnl/yazilar/ekle" class="btn btn-edit" >Blog Ekle</a>
+        <a href="~/blgpnl/yazilar/ekle" class="btn btn-edit" >Blog Ekle</a>
     </div>
 
     <div class="searchArea">
@@ -36,10 +36,10 @@
                         <td>@item.CreatedDate.ToString("dd MMMM yyyy") @(item.UpdatedDate.HasValue ? " / " + item.UpdatedDate.Value.ToString("dd MMMM yyyy") : "")</td>
                         <td>@(!item.Status ? "Yayında Değil" : (item.PublishDate.HasValue && item.PublishDate.Value > DateTime.Now ? $"Zamanlandı ({item.PublishDate.Value.ToString("dd.MM.yyyy HH:mm")})" : "Yayında"))</td>
                         <td>@item.ViewCount</td>
-                        <td><a href="/blgpnl/yazilar/duzenle/@item.Slug#yorumlar">@item.CommentCount</a></td>
+                        <td><a href="~/blgpnl/yazilar/duzenle/@item.Slug#yorumlar">@item.CommentCount</a></td>
                         <td class="row">
-                            <a href="/blgpnl/yazilar/duzenle/@item.Slug" class="btn btn-edit">Düzenle</a>
-                            <form method="post" action="/blgpnl/yazilar/sil/@item.Id" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">
+                            <a href="~/blgpnl/yazilar/duzenle/@item.Slug" class="btn btn-edit">Düzenle</a>
+                            <form method="post" action="~/blgpnl/yazilar/sil/@item.Id" style="display:inline;" data-confirm="Bu blog yazısını silmek istediğinize emin misiniz?">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-delete">Sil</button>
                             </form>

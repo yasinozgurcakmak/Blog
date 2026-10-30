@@ -22,7 +22,7 @@ public class ProfileController(
     public async Task<IActionResult> Edit()
     {
         var user = await userManager.GetUserAsync(User);
-        if (user is null) return Redirect($"/giris-yap?geldigiSayfa={Uri.EscapeDataString(PageUrl)}");
+        if (user is null) return Redirect($"{Request.PathBase}/giris-yap?geldigiSayfa={Uri.EscapeDataString(PageUrl)}");
 
         return View(EditView, new ProfileEditDto
         {
@@ -47,7 +47,7 @@ public class ProfileController(
     public async Task<IActionResult> Edit(ProfileEditDto dto)
     {
         var user = await userManager.GetUserAsync(User);
-        if (user is null) return Redirect($"/giris-yap?geldigiSayfa={Uri.EscapeDataString(PageUrl)}");
+        if (user is null) return Redirect($"{Request.PathBase}/giris-yap?geldigiSayfa={Uri.EscapeDataString(PageUrl)}");
 
         dto.Email = user.Email;
         dto.ExistingImageUrl = user.ImageUrl;
@@ -106,7 +106,7 @@ public class ProfileController(
         await signInManager.RefreshSignInAsync(user);
 
         TempData["ProfileSaved"] = "Profil bilgilerin başarıyla kaydedildi.";
-        return Redirect(PageUrl);
+        return Redirect($"{Request.PathBase}/{PageUrl}");
     }
 
     private static string? NormalizeUrl(string? url)

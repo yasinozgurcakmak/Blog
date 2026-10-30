@@ -20,7 +20,7 @@
                     <td>@item.Name</td>
                     <td>
                         <div class="action-buttons">
-                            <form method="post" action="/blgpnl/kategoriler/sil/@item.Id" style="display:inline;" data-confirm="Bu kategoriyi silmek istediğinize emin misiniz?">
+                            <form method="post" action="~/blgpnl/kategoriler/sil/@item.Id" style="display:inline;" data-confirm="Bu kategoriyi silmek istediğinize emin misiniz?">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-delete">Sil</button>
                             </form>
@@ -30,6 +30,6 @@
             }
         </tbody>
     </table>
-    <a href="/blgpnl/kategoriler/ekle" class="btn">Kategori Ekle</a>
+    <a href="~/blgpnl/kategoriler/ekle" class="btn">Kategori Ekle</a>
 </section>
 

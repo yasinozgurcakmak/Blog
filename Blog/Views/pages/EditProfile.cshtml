@@ -26,7 +26,7 @@
 <div class="profile-layout">
     <aside class="profile-layout__sidebar">
         <nav class="profile-nav">
-            <a href="/profili-guncelle" class="profile-nav__item profile-nav__item--active">
+            <a href="~/profili-guncelle" class="profile-nav__item profile-nav__item--active">
                 <div class="info">
                     <i class="icon">👤</i>
                     <span>Profil Bilgileri</span>
@@ -60,7 +60,7 @@
             </div>
         }
 
-        <form class="profile-form" id="profile-form" method="post" action="/profili-guncelle" enctype="multipart/form-data">
+        <form class="profile-form" id="profile-form" method="post" action="~/profili-guncelle" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="RemoveImage" id="remove-image" />
 
@@ -170,7 +170,7 @@
             <div class="form-actions-bar">
                 <div></div>
                 <div class="buttons">
-                    <a href="/" class="btn btn--outline">Vazgeç</a>
+                    <a href="~/" class="btn btn--outline">Vazgeç</a>
                     <button type="submit" class="btn btn--primary" id="save-btn">
                         <i id="save-icon">✓</i>
                         <span id="save-label">Değişiklikleri Kaydet</span>

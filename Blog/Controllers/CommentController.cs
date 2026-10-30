@@ -65,7 +65,7 @@ public class CommentController(ICommentService commentService, IValidator<Create
         RedirectToAction("Index", "Blog", new { slug }, fragment);
 
     private IActionResult RedirectToLogin(string slug) =>
-        Redirect("/giris-yap?geldigiSayfa=" + Uri.EscapeDataString("/makale/" + slug));
+        Redirect($"{Request.PathBase}/giris-yap?geldigiSayfa={Uri.EscapeDataString("/makale/" + slug)}");
 
     private int? GetUserId() => int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 }

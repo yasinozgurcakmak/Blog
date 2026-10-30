@@ -22,7 +22,7 @@
             @* Hata mesajlarını göster *@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            <form method="post" action="/blgpnl/giris-yap">
+            <form method="post" action="~/blgpnl/giris-yap">
                 @Html.AntiForgeryToken()
                 <input type="text" placeholder="Kullanıcı Adı veya E-posta" autocomplete="off" asp-for="UserName" />
                 <span asp-validation-for="UserName" class="text-danger"></span>

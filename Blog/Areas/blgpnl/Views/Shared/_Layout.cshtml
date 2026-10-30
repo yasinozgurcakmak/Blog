@@ -19,11 +19,11 @@
             <ul>
                 @if (User.IsInRole("Admin"))
                 {
-                    <li><a href="/blgpnl/kullanicilar" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/kullanicilar") ? "active" : "")"> <span>Kullanıcılar</span></a></li>
+                    <li><a href="~/blgpnl/kullanicilar" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/kullanicilar") ? "active" : "")"> <span>Kullanıcılar</span></a></li>
                 }
-                <li><a href="/blgpnl/kategoriler" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/kategoriler") ? "active" : "")"> <span>Kategoriler</span></a></li>
-                <li><a href="/blgpnl/yazilar" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/yazilar") ? "active" : "")"> <span>Yazılar</span></a></li>
-                <li><a href="/blgpnl/cikis"> <span>Çıkış</span></a></li>
+                <li><a href="~/blgpnl/kategoriler" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/kategoriler") ? "active" : "")"> <span>Kategoriler</span></a></li>
+                <li><a href="~/blgpnl/yazilar" class="@(Context.Request.Path.StartsWithSegments("/blgpnl/yazilar") ? "active" : "")"> <span>Yazılar</span></a></li>
+                <li><a href="~/blgpnl/cikis"> <span>Çıkış</span></a></li>
             </ul>
         </nav>
 
@@ -38,6 +38,7 @@
             <button type="button" id="fbDialogConfirm" class="btn btn-delete">Sil</button>
         </div>
     </div>
+    <script>window.__BASE_PATH = '@Url.Content("~/")';</script>
     <script src="~/admin/assets/js/fancybox/fancybox.umd.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/js/all.min.js" integrity="sha512-2+f4MxT8KwN4tUzw6/hv9kxKiix603S9kmBcix+0y0dBhd6zdaPOV1Thf1DM886pFZG+cAtmshBi8UBpo6m3JA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

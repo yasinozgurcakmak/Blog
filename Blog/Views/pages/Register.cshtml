@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
     var generalErrors = ViewData.ModelState[string.Empty]?.Errors;
 }
-<a href="/" class="btn btn--ghost auth-page__back">
+<a href="~/" class="btn btn--ghost auth-page__back">
     &larr; Ana Sayfaya Dön
 </a>
 
@@ -16,7 +16,7 @@
     </div>
 
 
-    <form class="auth-form" id="register-form" method="post" action="/uye-ol">
+    <form class="auth-form" id="register-form" method="post" action="~/uye-ol">
         @Html.AntiForgeryToken()
 
         @if (generalErrors is { Count: > 0 })
@@ -107,6 +107,6 @@
     </form>
 
     <div class="auth-card__footer">
-        Zaten hesabın var mı? <a href="/giris-yap">Giriş yap</a>
+        Zaten hesabın var mı? <a href="~/giris-yap">Giriş yap</a>
     </div>
 </div>

@@ -21,7 +21,7 @@ public class AccountController(
     [HttpGet("/giris-yap")]
     public IActionResult Login(string? geldigiSayfa = null)
     {
-        if (User.Identity?.IsAuthenticated == true) return Redirect("/");
+        if (User.Identity?.IsAuthenticated == true) return Redirect(AppUrl("/"));
 
         ViewData["geldigiSayfa"] = geldigiSayfa;
         return View(LoginView, new MemberLoginDto());
@@ -46,7 +46,7 @@ public class AccountController(
 
         var result = await signInManager.PasswordSignInAsync(user, dto.Password, dto.RememberMe, lockoutOnFailure: true);
 
-        if (result.Succeeded) return Url.IsLocalUrl(geldigiSayfa) ? Redirect(geldigiSayfa) : Redirect("/");
+        if (result.Succeeded) return Url.IsLocalUrl(geldigiSayfa) ? Redirect(AppUrl(geldigiSayfa!)) : Redirect(AppUrl("/"));
 
         ModelState.AddModelError(string.Empty, result.IsLockedOut
             ? "Çok fazla hatalı deneme yaptınız. Hesabınız geçici olarak kilitlendi, lütfen daha sonra tekrar deneyin."
@@ -57,7 +57,7 @@ public class AccountController(
     [HttpGet("/uye-ol")]
     public IActionResult Register()
     {
-        if (User.Identity?.IsAuthenticated == true) return Redirect("/");
+        if (User.Identity?.IsAuthenticated == true) return Redirect(AppUrl("/"));
 
         return View(RegisterView, new UserRegisterDto());
     }
@@ -111,7 +111,7 @@ public class AccountController(
         await userManager.AddToRoleAsync(user, DefaultRole);
 
         await signInManager.SignInAsync(user, isPersistent: false);
-        return Redirect("/");
+        return Redirect(AppUrl("/"));
     }
 
     [HttpPost("/cikis-yap")]
@@ -119,7 +119,14 @@ public class AccountController(
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
-        return Redirect("/");
+        return Redirect(AppUrl("/"));
+    }
+
+    private string AppUrl(string path)
+    {
+        var pathBase = Request.PathBase.Value ?? string.Empty;
+        if (pathBase.Length > 0 && path.StartsWith(pathBase, StringComparison.OrdinalIgnoreCase)) return path;
+        return pathBase + path;
     }
 
     private bool AddValidationErrors(FluentValidation.Results.ValidationResult validationResult)

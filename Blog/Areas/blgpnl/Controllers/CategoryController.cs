@@ -48,7 +48,7 @@ public class CategoryController(
         {
             var category = mapper.Map<Category>(dto);
             categoryService.TInsert(category);
-            return Redirect("/blgpnl/kategoriler");
+            return Redirect(Url.Content("~/blgpnl/kategoriler"));
         }
         catch (Exception ex)
         {

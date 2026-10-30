@@ -6,7 +6,7 @@
     var geldigiSayfa = ViewData["geldigiSayfa"] as string;
 }
 
-<a href="/" class="btn btn--ghost auth-page__back">
+<a href="~/" class="btn btn--ghost auth-page__back">
     &larr; Ana Sayfaya Dön
 </a>
 
@@ -17,7 +17,7 @@
         <p>Yorum yapmaya ve makaleleri kaydetmeye devam etmek için giriş yap.</p>
     </div>
 
-    <form class="auth-form" id="login-form" method="post" action="/giris-yap@(string.IsNullOrEmpty(geldigiSayfa) ? "" : "?geldigiSayfa=" + Uri.EscapeDataString(geldigiSayfa))">
+    <form class="auth-form" id="login-form" method="post" action="~/giris-yap@(string.IsNullOrEmpty(geldigiSayfa) ? "" : "?geldigiSayfa=" + Uri.EscapeDataString(geldigiSayfa))">
         @Html.AntiForgeryToken()
 
         @if (TempData["LoginSuccess"] is string loginSuccess)
@@ -69,13 +69,13 @@
                 <input asp-for="RememberMe" type="checkbox">
                 <span>Beni hatırla</span>
             </label>
-            <a href="/sifremi-unuttum" class="forgot-link">Şifremi unuttum</a>
+            <a href="~/sifremi-unuttum" class="forgot-link">Şifremi unuttum</a>
         </div>
 
         <button type="submit" class="btn btn--primary btn--full">Giriş Yap</button>
     </form>
 
     <div class="auth-card__footer">
-        Hesabın yok mu? <a href="/uye-ol">Hesap oluştur</a>
+        Hesabın yok mu? <a href="~/uye-ol">Hesap oluştur</a>
     </div>
 </div>

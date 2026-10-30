@@ -104,7 +104,7 @@ public class UsersController(
         }
 
         var updateResult = await userManager.UpdateAsync(user);
-        return updateResult.Succeeded ? Redirect("/blgpnl/kullanicilar") : AddErrorsAndReturn(updateResult.Errors, model, user.ImageUrl);
+        return updateResult.Succeeded ? Redirect(Url.Content("~/blgpnl/kullanicilar")) : AddErrorsAndReturn(updateResult.Errors, model, user.ImageUrl);
     }
 
     [HttpGet]

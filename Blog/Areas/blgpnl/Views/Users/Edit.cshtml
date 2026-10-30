@@ -9,7 +9,7 @@
     <div class="edit-form-wrapper">
         <h1>Kullanıcı Düzenle</h1>
 
-        <form method="post" action="/blgpnl/kullanicilar/guncelle/@Model.Id" enctype="multipart/form-data">
+        <form method="post" action="~/blgpnl/kullanicilar/guncelle/@Model.Id" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
 
             <input type="hidden" asp-for="Id" />
@@ -57,7 +57,7 @@
 
             <div class="row">
                 <button type="submit" class="btn">Kaydet</button>
-                <a href="/blgpnl/kullanicilar" class="btn ">İptal</a>
+                <a href="~/blgpnl/kullanicilar" class="btn ">İptal</a>
             </div>
         </form>
 

@@ -51,7 +51,7 @@
                 <td>@comment.CreatedDate.ToString("dd MMMM yyyy HH:mm", tr)</td>
                 <td>@comment.LikeCount</td>
                 <td>
-                    <form method="post" action="/blgpnl/yazilar/yorum-sil/@comment.Id" data-confirm="@confirmText">
+                    <form method="post" action="~/blgpnl/yazilar/yorum-sil/@comment.Id" data-confirm="@confirmText">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-delete">Sil</button>
                     </form>
@@ -66,7 +66,7 @@
     <div class="edit-form-wrapper">
         <h1>Blog Yazısını Düzenle</h1>
 
-        <form method="post" action="/blgpnl/yazilar/duzenle/@Model.Dto.Slug" enctype="multipart/form-data" class="blog-form" novalidate>
+        <form method="post" action="~/blgpnl/yazilar/duzenle/@Model.Dto.Slug" enctype="multipart/form-data" class="blog-form" novalidate>
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Dto.Id" />
             <input type="hidden" asp-for="Dto.ExistingThumbnail" />
@@ -162,7 +162,7 @@
 
             <div class="row">
                 <button type="submit" class="btn btn-edit">Güncelle</button>
-                <a href="/blgpnl/yazilar" class="btn btn-delete">İptal</a>
+                <a href="~/blgpnl/yazilar" class="btn btn-delete">İptal</a>
             </div>
         </form>
     </div>

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,7 +12,7 @@
     <header class="header">
         <div class="header__inner">
             <div class="brand">
-                <a href="/">
+                <a href="~/">
                     <b>B</b>
                     <span>BLOG</span>
                 </a>
@@ -23,19 +23,19 @@
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     var fullName = $"{User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value} {User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value}".Trim();
-                    <a href="/kaydedilenler" class="btn btn--ghost btn--icon" title="Kaydedilenler" aria-label="Kaydedilenler">
+                    <a href="~/kaydedilenler" class="btn btn--ghost btn--icon" title="Kaydedilenler" aria-label="Kaydedilenler">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.75 6L7.5 5.25H16.5L17.25 6V19.3162L12 16.2051L6.75 19.3162V6ZM8.25 6.75V16.6838L12 14.4615L15.75 16.6838V6.75H8.25Z" fill="currentColor"></path></svg>
                     </a>
-                    <a href="/profili-guncelle" class="btn btn--ghost">@(string.IsNullOrEmpty(fullName) ? User.Identity.Name : fullName)</a>
-                    <form method="post" action="/cikis-yap" style="display: inline;">
+                    <a href="~/profili-guncelle" class="btn btn--ghost">@(string.IsNullOrEmpty(fullName) ? User.Identity.Name : fullName)</a>
+                    <form method="post" action="~/cikis-yap" style="display: inline;">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn--primary">Çıkış Yap</button>
                     </form>
                 }
                 else
                 {
-                    <a href="/giris-yap" class="btn btn--ghost">Giriş Yap</a>
-                    <a href="/uye-ol" class="btn btn--primary">Üye Ol</a>
+                    <a href="~/giris-yap" class="btn btn--ghost">Giriş Yap</a>
+                    <a href="~/uye-ol" class="btn btn--primary">Üye Ol</a>
                 }
             </div>
         </div>
@@ -45,6 +45,7 @@
         @RenderBody()
     </main>
 
+    <script>window.__BASE_PATH = '@Url.Content("~/")';</script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/assets/js/main.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
