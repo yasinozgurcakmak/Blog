@@ -1,0 +1,11 @@
+**/.git
+**/.github
+**/.vscode
+**/.vs
+**/.playwright-mcp
+**/bin
+**/obj
+**/publish
+**/*.user
+**/*.suo
+*.log

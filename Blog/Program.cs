@@ -73,7 +73,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-// Uygulama https://alanadi/blog/ altında yayınlanır.
 app.UsePathBase("/blog");
 
 if (app.Environment.IsDevelopment())
