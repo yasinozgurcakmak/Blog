@@ -1,10 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@600;700&family=Inter:wght@400&family=JetBrains+Mono:wght@400;500&display=swap');
 
-/* 
- * 1. COLOR VARIABLES 
- * Dynamically extracted from Stitch MCP Design MD (Obsidian Slate Developer Pulse)
- */
-
 $primary: #6366f1;
 $secondary: #8b5cf6;
 $tertiary: #06b6d4;
@@ -303,7 +298,6 @@ img {
     a:hover { color: #94a3b8; }
   }
 
-  // Mobilde konular yazıların üstüne, alt bağlantılar sayfanın sonuna
   &--home {
     @media (max-width: 1023.98px) {
       display: contents;

@@ -19,7 +19,7 @@
 
     var authorAvatar = string.IsNullOrWhiteSpace(Model.AuthorImageUrl)
         ? "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(Model.AuthorName.Trim()) + "&background=random&color=fff&size=160"
-        : Model.AuthorImageUrl;
+        : Url.Content("~" + Model.AuthorImageUrl);
 
     var authorLinks = new[]
     {
@@ -63,7 +63,7 @@
                 <div class="author">
                     @if (!string.IsNullOrWhiteSpace(Model.AuthorImageUrl))
                     {
-                        <img src="@Model.AuthorImageUrl" alt="@Model.AuthorName">
+                        <img src="@Url.Content("~" + Model.AuthorImageUrl)" alt="@Model.AuthorName">
                     }
                     <div class="author__details">
                         <div class="author__name">
@@ -98,7 +98,7 @@
         </header>
 
         <div class="article-body">
-            @Html.Raw(Model.Content)
+            @Html.Raw(Blog.Helper.UploadPathHelper.AddPathBase(Model.Content, Context.Request.PathBase))
         </div>
 
         <div class="article-footer">
@@ -133,7 +133,7 @@
 
             string CommentAvatar(CommentDto comment) => string.IsNullOrWhiteSpace(comment.AuthorImageUrl)
                 ? "https://ui-avatars.com/api/?name=" + Uri.EscapeDataString(comment.AuthorName.Trim()) + "&background=random&color=fff&size=80"
-                : comment.AuthorImageUrl;
+                : Url.Content("~" + comment.AuthorImageUrl);
 
             async Task RenderThread(List<CommentDto> comments, int depth)
             {

@@ -44,7 +44,7 @@
                 <div class="img-content">
 
                     <div>
-                        <img id="profilePreview" class="profilePicture" src="@(string.IsNullOrEmpty(Model.ExistingImageUrl) ? "https://ui-avatars.com/api/?name=" + Model.Name + "+" + Model.Surname + "&background=random&color=fff&size=80" : Model.ExistingImageUrl)" alt="Profil önizleme" />
+                        <img id="profilePreview" class="profilePicture" src="@(string.IsNullOrEmpty(Model.ExistingImageUrl) ? "https://ui-avatars.com/api/?name=" + Model.Name + "+" + Model.Surname + "&background=random&color=fff&size=80" : Url.Content("~" + Model.ExistingImageUrl))" alt="Profil önizleme" />
                     </div>
 
                     <input type="file" id="profileImageInput" asp-for="ProfileImage" class="file" accept="image/*" />

@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// Uygulama /blog/ altında yayınlandığında mutlak yolların doğru üretilmesi için.
 var BASE_PATH = typeof window.__BASE_PATH === 'string' ? window.__BASE_PATH : '/';
 
 var fbDialogAction = null;

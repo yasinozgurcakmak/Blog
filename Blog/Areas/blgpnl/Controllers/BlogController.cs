@@ -134,7 +134,7 @@ public class BlogController(
         var blogFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads", "blogs", safeSlug);
         var imageName = await ImageHelper.SaveImageAsWebpAsync(file, blogFolder, "content");
 
-        return Json(new { success = true, url = $"/uploads/blogs/{safeSlug}/{imageName}" });
+        return Json(new { success = true, url = Url.Content($"~/uploads/blogs/{safeSlug}/{imageName}") });
     }
 
     [HttpGet]
@@ -145,6 +145,7 @@ public class BlogController(
         if (value is null) return NotFound();
 
         var dto = mapper.Map<UpdateBlogDto>(value);
+        dto.Content = UploadPathHelper.AddPathBase(dto.Content, Request.PathBase);
         var vm = new BlogEditViewModel { Dto = dto };
         vm.Categories = BuildCategoryList(dto.CategoryId);
         (vm.Comments, vm.CommentCount) = commentService.GetCommentTree(dto.Id, null);
@@ -238,7 +239,7 @@ public class BlogController(
     {
         if (string.IsNullOrWhiteSpace(content)) return string.Empty;
 
-        var sanitized = HtmlSanitizerHelper.Sanitize(content);
+        var sanitized = UploadPathHelper.RemovePathBase(HtmlSanitizerHelper.Sanitize(content), Request.PathBase);
         return ProcessContentBase64ImagesHelper.ProcessContentBase64Images(sanitized, slug, webHostEnvironment.WebRootPath);
     }
 

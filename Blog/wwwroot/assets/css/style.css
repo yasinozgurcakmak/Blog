@@ -1,8 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@600;700&family=Inter:wght@400&family=JetBrains+Mono:wght@400;500&display=swap");
-/* 
- * 1. COLOR VARIABLES 
- * Dynamically extracted from Stitch MCP Design MD (Obsidian Slate Developer Pulse)
- */
 *, *:after, *::before {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;

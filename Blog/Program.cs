@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.RateLimiting;
 
-// DateTime değerleri SQL Server'daki gibi saat dilimsiz (timestamp without time zone) saklanır; DateTime.Now kullanımı hata vermez.
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,13 +66,16 @@ builder.Services.AddValidatorsFromAssemblyContaining<Blog.ValidationRules.Create
 
 var app = builder.Build();
 
-// Apache/Nginx ters vekil arkasında çalışırken gerçek şema ve IP'yi al.
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-app.UsePathBase("/blog");
+var pathBase = builder.Configuration["PathBase"];
+if (!string.IsNullOrEmpty(pathBase))
+{
+    app.UsePathBase(pathBase);
+}
 
 if (app.Environment.IsDevelopment())
 {

@@ -9,7 +9,7 @@
         <div class="thumb">
             @if (!string.IsNullOrWhiteSpace(blog.Thumbnail))
             {
-                <img src="@blog.Thumbnail" alt="@blog.Title" loading="lazy" width="300" height="300">
+                <img src="@Url.Content("~" + blog.Thumbnail)" alt="@blog.Title" loading="lazy" width="300" height="300">
             }
         </div>
         <div class="content">
@@ -22,7 +22,7 @@
                 <div class="author">
                     @if (!string.IsNullOrWhiteSpace(blog.AuthorImageUrl))
                     {
-                        <img src="@blog.AuthorImageUrl" alt="@blog.AuthorName">
+                        <img src="@Url.Content("~" + blog.AuthorImageUrl)" alt="@blog.AuthorName">
                     }
                     <span>@blog.AuthorName</span>
                 </div>

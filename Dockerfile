@@ -13,6 +13,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 ENV ASPNETCORE_HTTP_PORTS=8080
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV PathBase=/blog
 COPY --from=build /app/publish .
 RUN mkdir -p /app/wwwroot/uploads
 EXPOSE 8080

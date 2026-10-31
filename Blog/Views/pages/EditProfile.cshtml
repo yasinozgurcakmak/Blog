@@ -68,7 +68,7 @@
                 <label class="form-section__label">Profil Fotoğrafı</label>
                 <div class="avatar-upload">
                     <div class="avatar-preview">
-                        <img id="avatar-img" src="@(hasImage ? Model.ExistingImageUrl : avatarFallback)" alt="@Model.Name @Model.Surname" data-fallback-base="https://ui-avatars.com/api/?background=random&color=fff&size=160&name=" data-has-image="@(hasImage ? "true" : "false")">
+                        <img id="avatar-img" src="@(hasImage ? Url.Content("~" + Model.ExistingImageUrl) : avatarFallback)" alt="@Model.Name @Model.Surname" data-fallback-base="https://ui-avatars.com/api/?background=random&color=fff&size=160&name=" data-has-image="@(hasImage ? "true" : "false")">
                     </div>
                     <div class="avatar-actions">
                         <div class="buttons">

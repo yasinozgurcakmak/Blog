@@ -136,7 +136,7 @@
                             </button>
                         </div>
                         <div class="preview-body">
-                            <img id="imagePreview" src="@(hasThumbnail ? Model.Dto.ExistingThumbnail : "#")" data-original-src="@(hasThumbnail ? Model.Dto.ExistingThumbnail : "")" alt="Görsel Öngösterimi" />
+                            <img id="imagePreview" src="@(hasThumbnail ? Url.Content("~" + Model.Dto.ExistingThumbnail) : "#")" data-original-src="@(hasThumbnail ? Url.Content("~" + Model.Dto.ExistingThumbnail) : "")" alt="Görsel Öngösterimi" />
                         </div>
                         <div class="preview-footer">
                             <span id="previewInfo" class="preview-info">@(hasThumbnail ? "Kayıtlı görsel kullanılıyor" : "")</span>
