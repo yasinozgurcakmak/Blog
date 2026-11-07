@@ -15,6 +15,11 @@ namespace Blog.Areas.blgpnl.Controllers;
 public class LoginController(SignInManager<AppUser> signInManager, UserManager<AppUser> userManager) : Controller
 {
     [HttpGet]
+    [Route("blgpnl")]
+    public IActionResult Root() =>
+        Redirect(Url.Content(User.Identity?.IsAuthenticated == true ? "~/blgpnl/yazilar" : "~/blgpnl/giris-yap"));
+
+    [HttpGet]
     [Route("blgpnl/giris-yap")]
     public IActionResult Index() => View(new UserLoginDto());
 
@@ -51,7 +56,7 @@ public class LoginController(SignInManager<AppUser> signInManager, UserManager<A
             }
 
             await signInManager.SignInAsync(user, isPersistent: false);
-            return Redirect(isAdmin ? "/blgpnl/kullanicilar" : "/blgpnl/yazilar");
+            return Redirect(Url.Content(isAdmin ? "~/blgpnl/kullanicilar" : "~/blgpnl/yazilar"));
         }
 
         if (result.IsLockedOut)

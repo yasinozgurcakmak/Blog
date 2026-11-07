@@ -11,8 +11,24 @@ A production-ready, full-stack blogging and publishing platform engineered with 
 
 ---
 
+## 🌐 Live Demo
+
+| | Link |
+|---|---|
+| **Blog** | [demo.yasinozgurcakmak.com.tr/blog](https://demo.yasinozgurcakmak.com.tr/blog/) |
+| **Admin Panel** | [demo.yasinozgurcakmak.com.tr/blog/blgpnl/giris-yap](https://demo.yasinozgurcakmak.com.tr/blog/blgpnl/giris-yap) |
+
+**Demo account**
+
+| Email | Password |
+|---|---|
+| `demouser@gmail.com` | `DemoUser0!` |
+
+---
+
 ## 📑 Table of Contents
 
+- [Live Demo](#-live-demo)
 - [Key Features](#-key-features)
 - [Architecture & Design Patterns](#-architecture--design-patterns)
 - [Project Structure](#-project-structure)
